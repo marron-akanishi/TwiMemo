@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block menu %}
+<script src="/static/js/util.js"></script>
+<div class="container">
+  <input type="button" class="btn btn-default" onclick="location.href='/detail/{{memo.id}}'" value="詳細に戻る">
+</div>
+{% endblock menu %}
+{% block detail %}
+<div class="container">
+  <form method="POST" action="/edited/{{memo.id}}" class="form-horizontal">
+    <label for="contents" class="control-label">内容:</label>
+    <input type="textarea" id="contents" name="contents" value="{{memo.contents}}" class="form-control">
+    <label for="media" class="control-label">画像(URL):</label>
+    <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control">
+    <br>
+    <input type="submit" value="更新" class="btn btn-primary">
+  </form>
+</div>
+{% endblock detail %}

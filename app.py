@@ -1,16 +1,10 @@
-# ajaxはPOST、それ以外はGET
 import os
-import sys
-import glob
 import json
 import DBreader as db
 import tweepy as tp
 import flask
 from functools import wraps
-import zipfile
-import urllib
-import datetime
-# TL回収用
+from datetime import datetime
 import streaming
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -62,6 +56,11 @@ def index():
 @app.route('/about')
 def about():
     return flask.render_template('about.html')
+
+# エラー
+@app.route('/error')
+def error():
+    return flask.render_template('error.html')
 
 # twitter認証
 @app.route('/twitter_auth', methods=['GET'])
@@ -131,7 +130,7 @@ def memo_detail(id):
     try:
         detail = db.get_detail(int(id), "DB/"+dbname+".db")
     except:
-        return flask.render_template('error.html')
+        return flask.redirect("/error")
     return flask.render_template('detail.html', memo=detail)
 
 # メモ編集
@@ -142,29 +141,33 @@ def memo_editscreen(id):
     try:
         detail = db.get_detail(int(id), "DB/"+dbname+".db")
     except:
-        return flask.render_template('error.html')
-    return flask.render_template('edit.html', detail=memo)
+        return flask.redirect("/error")
+    return flask.render_template('edit.html', memo=detail)
 
-@app.route('/edited/<id>', methods=['PUT'])
+@app.route('/edited/<id>', methods=['POST'])
 @login_check
 def memo_edit(id):
+    memo = {}
     dbname = flask.session['userID']
+    memo["id"] = int(id)
+    memo["contents"] = flask.request.form["contents"]
+    memo["media"] = flask.request.form["media"]
+    memo["source"] = "編集済み"
+    memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
+        db.update_memo("DB/"+dbname+".db", int(id), memo)
         detail = db.get_detail(int(id), "DB/"+dbname+".db")
     except:
-        return flask.render_template('error.html')
-    return flask.render_template('detail.html', detail=memo)
+        return flask.redirect("/error")
+    return flask.redirect("/detail/"+id)
 
 # メモ削除
 @app.route('/delete/<id>', methods=['DELETE'])
 @login_check
 def memo_delete(id):
     dbname = flask.session['userID']
-    try:
-        detail = db.get_detail(int(id), "DB/"+dbname+".db")
-    except:
-        return flask.render_template('error.html')
-    return flask.render_template('detail.html', detail=memo)
+    db.del_memo("DB/"+dbname+".db", int(id))
+    return "OK"
 
 if __name__ == '__main__':
     # debug server

@@ -10,10 +10,10 @@ def write_memo(path, memo):
     else:
         conn = sql.connect(path)
         conn.execute("""create table list (id integer, contents text, media text,
-                        tweet_url text, time text)""")
+                        source text, time text)""")
         conn.commit()
     SQL = "insert into list values(?,?,?,?,?)"
-    value = (memo["id"], memo["contents"], memo["media"], memo["tweet_url"], memo["time"])
+    value = (memo["id"], memo["contents"], memo["media"], memo["source"], memo["time"])
     conn.execute(SQL, value)
     conn.commit()
     conn.close()
@@ -27,6 +27,11 @@ def del_memo(path, id):
     conn.execute("delete from list where id = {}".format(id))
     conn.commit()
     conn.close()
+
+# DB更新
+def update_memo(path, id, memo):
+    del_memo(path, id)
+    write_memo(path, memo)
 
 # DBからリスト取得
 def get_list(path):
@@ -58,7 +63,7 @@ def get_detail(id, dbfile):
         "id":row["id"],
         "contents":row["contents"],
         "media":row["media"],
-        "tweet_url":row["tweet_url"],
+        "source":row["source"],
         "time":row["time"]
     }
     cur.close()

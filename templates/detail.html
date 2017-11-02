@@ -4,18 +4,18 @@
 <div class="container">
   <input type="button" class="btn btn-default" onclick="location.href='/list'" value="一覧に戻る">
   <input type="button" class="btn btn-primary" onclick="location.href='/edit/{{memo.id}}'" value="編集">
-  <input type="button" class="btn btn-danger" onclick="delmemo()" value="削除">
+  <input type="button" class="btn btn-danger" onclick="delmemo('{{memo.id}}')" value="削除">
 </div>
 {% endblock menu %}
 {% block detail %}
 <div class="container">
-  <table class="table table-condensed">
+  <table class="table">
     <tr>
       <td>ID</td>
       <td>{{memo.id}}</td>
     </tr>
     <tr>
-      <td>編集時刻</td>
+      <td>最終更新日時</td>
       <td>{{memo.time}}</td>
     </tr>
     <tr>
@@ -24,17 +24,17 @@
     </tr>
     {% if memo.media != "null" %}
     <tr>
-      <td>メディア</td>
+      <td>画像</td>
       <td><img src="{{memo.media}}:small"></img></td>
     </tr>
     {% endif %}
     <tr>
       <td>ソース</td>
       <td>
-      {% if memo.tweet_url != "DirectMessage" %}
-      <a href="{{memo.tweet_url}}" target="_blank">{{memo.tweet_url}}</a>
+      {% if memo.source != "DirectMessage" and memo.source != "編集済み" %}
+      <a href="{{memo.source}}" target="_blank">{{memo.source}}</a>
       {% else %}
-      ダイレクトメッセージ
+      {{memo.source}}
       {% endif %}
       </td>
     </tr>

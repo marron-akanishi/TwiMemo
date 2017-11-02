@@ -38,7 +38,7 @@ class StreamListener(tp.StreamListener):
                 memo["media"] = status.entities["media"][0]["media_url"]
             except:
                 memo["media"] = "null"
-            memo["tweet_url"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
+            memo["source"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
             memo["time"] = str(status.created_at)
             db.write_memo(dbpath, memo)
             # リプを送信
@@ -57,7 +57,7 @@ class StreamListener(tp.StreamListener):
             memo["media"] = status["entities"]["media"][0]["media_url"]
         except:
             memo["media"] = "null"
-        memo["tweet_url"] = "DirectMessage"
+        memo["source"] = "DirectMessage"
         memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.write_memo(dbpath, memo)
         # リプを送信

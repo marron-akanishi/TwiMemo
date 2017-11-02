@@ -7,7 +7,7 @@
   {% if list %}
   <table class="table table-condensed">
     <tr>
-      <th>時刻</th>
+      <th>最終更新日時</th>
       <th>内容</th>
       <th></th>
     </tr>
@@ -17,7 +17,7 @@
       <td>{{memo.contents}}</td>
       <td align="right">
         <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
-        <button class="btn btn-danger" onclick="delmemo()">削除</button>
+        <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>
       </td>
     </tr>
     {% endfor %}
