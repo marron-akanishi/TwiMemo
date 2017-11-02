@@ -20,12 +20,18 @@
     </tr>
     <tr>
       <td>内容</td>
-      <td>{{memo.contents}}</td>
+      <td>{{memo.contents|safe}}</td>
     </tr>
     {% if memo.media != "null" %}
     <tr>
       <td>画像</td>
       <td><a href="{{memo.media}}" target="_blank"><img src="{{memo.media}}:small"></img></a></td>
+    </tr>
+    {% endif %}
+    {% if memo.url != "null" %}
+    <tr>
+      <td>URL</td>
+      <td><a href="{{memo.url}}" target="_blank">{{memo.url}}</a></td>
     </tr>
     {% endif %}
     <tr>

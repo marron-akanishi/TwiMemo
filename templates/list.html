@@ -14,7 +14,15 @@
     {% for memo in list %}
     <tr>
       <td>{{memo.time}}</td>
-      <td>{{memo.contents}}</td>
+      <td>
+        {% if memo.media != "null" %}
+        <span class="glyphicon glyphicon-picture"></span>
+        {% endif %}
+        {% if memo.url != "null" %}
+        <span class="glyphicon glyphicon-bookmark"></span>
+        {% endif %}
+        {{memo.contents|safe}}
+      </td>
       <td align="right">
         <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
         <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>

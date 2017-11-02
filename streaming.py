@@ -40,8 +40,12 @@ class StreamListener(tp.StreamListener):
                 memo["media"] = status.entities["media"][0]["media_url"]
             except:
                 memo["media"] = "null"
+            try:
+                memo["url"] = status.entities["urls"][0]["expanded_url"]
+            except:
+                memo["url"] = "null"
             memo["source"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
-            memo["time"] = str(status.created_at)
+            memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             db.write_memo(dbpath, memo)
             # リプを送信
             self.api.update_status("@{} メモに登録しました[{}]".format(status.user.screen_name,memo["time"]), status.id)
@@ -61,6 +65,10 @@ class StreamListener(tp.StreamListener):
             memo["media"] = status["entities"]["media"][0]["media_url"]
         except:
             memo["media"] = "null"
+        try:
+            memo["url"] = status["entities"]["urls"][0]["expanded_url"]
+        except:
+            memo["url"] = "null"
         memo["source"] = "DirectMessage"
         memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.write_memo(dbpath, memo)

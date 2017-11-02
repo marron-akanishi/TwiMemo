@@ -46,7 +46,7 @@ def index():
     key = flask.request.cookies.get('key')
     secret = flask.request.cookies.get('secret')
     if key is None or secret is None:
-        return flask.render_template('index.html')
+        return flask.render_template('index.html', top=True)
     else:
         flask.session['key'] = key
         flask.session['secret'] = secret
@@ -152,6 +152,7 @@ def memo_edit(id):
     memo["id"] = int(id)
     memo["contents"] = flask.request.form["contents"]
     memo["media"] = flask.request.form["media"]
+    memo["url"] = flask.request.form["url"]
     memo["source"] = "編集済み"
     memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
