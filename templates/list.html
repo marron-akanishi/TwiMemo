@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block menu %}
+<script src="/static/js/util.js"></script>
+<div class="container">
+  <div class="alert alert-success" role="alert">@{{session['name']}}としてログインしました</div>
+  <h4>一覧</h4>
+  {% if list %}
+  <table class="table table-condensed">
+    <tr>
+      <th>時刻</th>
+      <th>内容</th>
+      <th></th>
+    </tr>
+    {% for memo in list %}
+    <tr>
+      <td>{{memo.time}}</td>
+      <td>{{memo.contents}}</td>
+      <td align="right">
+        <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
+        <button class="btn btn-danger" onclick="delmemo()">削除</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>メモが存在しません</p>
+  {% endif %}
+</div>
+{% endblock menu %}

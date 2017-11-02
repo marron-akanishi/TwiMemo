@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block menu %}
+<div class="container">
+  <h4 align="center">お知らせ</h4>
+  <iframe class="container" frameborder="0" id="news-iframe" src="/static/html/info.html"></iframe>
+  <div align="center">
+    <img align="center" src="/static/images/twitter.png" onclick="location.href='/twitter_auth'" style="cursor: pointer" />
+  </div>
+</div>
+{% endblock menu %}
