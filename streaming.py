@@ -22,8 +22,10 @@ class StreamListener(tp.StreamListener):
 
     def on_status(self, status):
         """UserStreamから飛んできたStatusを処理する"""
+        if status.user.id == self.me.id:
+            return
         # ツイートに#memoから始まってるかどうか
-        if(status.text.startswith("#memo")):
+        if status.text.startswith("#memo"):
             # DBのパスを生成
             dbpath = "DB/{}.db".format(status.user.id)
             # ID生成
@@ -47,6 +49,8 @@ class StreamListener(tp.StreamListener):
     def on_direct_message(self, status):
         """DMの処理"""
         status = status.direct_message
+        if status["sender_id"] == self.me.id:
+            return
         # DBのパスを生成
         dbpath = "DB/{}.db".format(status["sender_id"])
         # データ書き込み
