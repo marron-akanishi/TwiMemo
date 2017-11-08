@@ -55,7 +55,7 @@ def index():
 # このページについて
 @app.route('/about')
 def about():
-    return flask.render_template('about.html')
+    return flask.render_template('about.html', top=True)
 
 # エラー
 @app.route('/error')
