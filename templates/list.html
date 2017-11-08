@@ -21,7 +21,7 @@
         {% if memo.url != "null" %}
         <span class="glyphicon glyphicon-bookmark"></span>
         {% endif %}
-        {{memo.contents|safe}}
+        {{memo.contents}}
       </td>
       <td align="right">
         <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
