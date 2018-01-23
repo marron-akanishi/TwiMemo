@@ -3,35 +3,48 @@
 <script src="/static/js/util.js"></script>
 <div class="container">
   <div class="alert alert-success" role="alert">@{{session['name']}}としてログインしました</div>
-  <h4>一覧</h4>
-  {% if list %}
-  <table class="table table-condensed">
-    <tr>
-      <th>最終更新日時</th>
-      <th>内容</th>
-      <th></th>
-    </tr>
-    {% for memo in list %}
-    <tr>
-      <td>{{memo.time}}</td>
-      <td>
-        {% if memo.media != "null" %}
-        <span class="glyphicon glyphicon-picture"></span>
-        {% endif %}
-        {% if memo.url != "null" %}
-        <span class="glyphicon glyphicon-bookmark"></span>
-        {% endif %}
-        {{memo.contents|safe}}
-      </td>
-      <td align="right">
-        <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
-        <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-  <p>メモが存在しません</p>
-  {% endif %}
+  <div class="row justify-content-between">
+    <div class="col-auto">
+      <button class="btn btn-primary" onclick="location.href='/new'">＋ 新規追加</button>
+    </div>
+    <div class="col-auto d-none d-md-block">
+      <form class="form-inline">
+        <input type="text" class="form-control" id="search_word" style="margin-right: 5px;">
+        <button class="btn btn-primary" onclick="">
+          <span class="oi oi-magnifying-glass"> 検索</span>
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock menu %}
+{% block contents %}
+<div class="container">
+  <div class="row">
+  {% for memo in list %}
+  <div class="col-md-6">
+    <div class="card" style="margin-bottom: 5px;">
+      <div class="card-body">
+        <h5 class="card-title">{{memo.title}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{memo.time}}</h6>
+        <div class="row justify-content-between">
+          <div class="col-auto">
+            {% if memo.media != "" %}
+            <span class="oi oi-image"></span>
+            {% endif %}
+            {% if memo.url != "" %}
+            <span class="oi oi-bookmark"></span>
+            {% endif %}
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
+            <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  </div>
+</div>
+{% endblock contents %}

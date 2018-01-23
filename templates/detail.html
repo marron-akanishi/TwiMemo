@@ -2,48 +2,35 @@
 {% block menu %}
 <script src="/static/js/util.js"></script>
 <div class="container">
-  <input type="button" class="btn btn-default" onclick="location.href='/list'" value="一覧に戻る">
-  <input type="button" class="btn btn-primary" onclick="location.href='/edit/{{memo.id}}'" value="編集">
-  <input type="button" class="btn btn-danger" onclick="delmemo('{{memo.id}}')" value="削除">
+  <div class="row justify-content-between">
+    <div class="col-auto">
+      <input type="button" class="btn btn-default" onclick="location.href='/list'" value="一覧に戻る">
+    </div>
+    <div class="col-auto">
+      <input type="button" class="btn btn-primary" onclick="location.href='/edit/{{memo.id}}'" value="編集">
+      <input type="button" class="btn btn-danger" onclick="delmemo('{{memo.id}}')" value="削除">
+    </div>
+  </div>
 </div>
 {% endblock menu %}
-{% block detail %}
+{% block contents %}
 <div class="container">
-  <table class="table">
-    <tr>
-      <td>ID</td>
-      <td>{{memo.id}}</td>
-    </tr>
-    <tr>
-      <td>最終更新日時</td>
-      <td>{{memo.time}}</td>
-    </tr>
-    <tr>
-      <td>内容</td>
-      <td>{{memo.contents|safe}}</td>
-    </tr>
-    {% if memo.media != "null" %}
-    <tr>
-      <td>画像</td>
-      <td><a href="{{memo.media}}" target="_blank"><img src="{{memo.media}}:small"></img></a></td>
-    </tr>
+  <h3>{{memo.title}}</h3>
+  <h5 class="text-right text-muted">{{memo.time}}</h5>
+  <p>{{memo.contents|safe}}</p>
+  <div class="row">
+    {% for url in memo.media %}
+    {% if url != "" %}
+    <div class="col-md" style="margin-bottom: 5px;">
+      <a href="{{url}}" target="_blank">
+        <img src="{{url}}" class="img-thumbnail"></img>
+      </a>
+    </div>
     {% endif %}
-    {% if memo.url != "null" %}
-    <tr>
-      <td>URL</td>
-      <td><a href="{{memo.url}}" target="_blank">{{memo.url}}</a></td>
-    </tr>
-    {% endif %}
-    <tr>
-      <td>ソース</td>
-      <td>
-      {% if memo.source != "DirectMessage" and memo.source != "編集済み" %}
-      <a href="{{memo.source}}" target="_blank">{{memo.source}}</a>
-      {% else %}
-      {{memo.source}}
-      {% endif %}
-      </td>
-    </tr>
-  </table>
+    {% endfor %}
+  </div>
+  <p>
+    <a href="{{memo.url}}" target="_blank">{{memo.url}}</a>
+  </p>
 </div>
-{% endblock detail %}
+{% endblock contents %}

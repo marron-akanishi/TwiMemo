@@ -1,12 +1,16 @@
 import os
 import time
 from datetime import datetime
-import hashlib
-import urllib
 import json
+import re
 import tweepy as tp
 import threading
-import DBreader as db
+import db_utils as db
+
+# スタート文字列
+start = "#dev_memo"
+# パターン
+pattern = re.compile(r"https://twitter.com/\w*/status/\d*")
 
 def get_oauth(setting):
     """設定ファイルから各種キーを取得し、OAUTH認証を行う"""
@@ -19,33 +23,41 @@ class StreamListener(tp.StreamListener):
         """コンストラクタ"""
         self.api = api
         self.me = self.api.me()
+    
+    def make_memo(self, status):
+        memo = {}
+        memo["contents"] = status.text[len(start):].strip()
+        memo["title"] = memo["contents"]
+        if len(memo["title"]) > 20:
+            memo["title"] = memo["title"][:20] + "..."
+        media_url = []
+        if hasattr(status, "extended_entities"):
+            if 'media' in status.extended_entities:
+                status_media = status.extended_entities
+                for image in status_media['media']:
+                    media_url.append(image['media_url'])
+        memo["media"] = ','.join(media_url)
+        try:
+            memo["url"] = status.entities["urls"][0]["expanded_url"]
+        except:
+            memo["url"] = ""
+        return memo
 
     def on_status(self, status):
         """UserStreamから飛んできたStatusを処理する"""
         if status.user.id == self.me.id:
             return
-        # ツイートに#memoから始まってるかどうか
-        if status.text.startswith("#memo"):
+        # ツイートが指定文字列から始まってるかどうか
+        if status.text.startswith(start):
             # DBのパスを生成
             dbpath = "DB/{}.db".format(status.user.id)
-            # ID生成
+            # データ生成
             memo = {}
             memo["id"] = status.id
-            # Tweetが引用ツイートかどうか
-            if hasattr(status, "quoted_status"):
-                status = status.quoted_status
-            # データ書き込み
-            memo["contents"] = status.text[6:]
-            try:
-                memo["media"] = status.entities["media"][0]["media_url"]
-            except:
-                memo["media"] = "null"
-            try:
-                memo["url"] = status.entities["urls"][0]["expanded_url"]
-            except:
-                memo["url"] = "null"
             memo["source"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
             memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            content = self.make_memo(status)
+            memo.update(content)
             db.write_memo(dbpath, memo)
             # リプを送信
             self.api.update_status("@{} メモに登録しました[{}]".format(status.user.screen_name,memo["time"]), status.id)
@@ -55,25 +67,39 @@ class StreamListener(tp.StreamListener):
         status = status.direct_message
         if status["sender_id"] == self.me.id:
             return
+        sender = status["sender_id"]
         # DBのパスを生成
-        dbpath = "DB/{}.db".format(status["sender_id"])
+        dbpath = "DB/{}.db".format(sender)
         # データ書き込み
         memo = {}
         memo["id"] = status["id"]
-        memo["contents"] = status["text"]
+        # 引用ツイートチェック
         try:
-            memo["media"] = status["entities"]["media"][0]["media_url"]
+            url = status["entities"]["urls"][0]["expanded_url"]
+            if pattern.match(url):
+                status_id = url.split("/")[-1]
+                status = self.api.get_status(status_id)
+                status.text = start + status.text
+                content = self.make_memo(status)
+                memo.update(content)
         except:
-            memo["media"] = "null"
-        try:
-            memo["url"] = status["entities"]["urls"][0]["expanded_url"]
-        except:
-            memo["url"] = "null"
+            memo["contents"] = status["text"]
+            memo["title"] = memo["contents"]
+            if len(title) > 20:
+                memo["title"] = memo["title"][:20] + "..."
+            try:
+                memo["media"] = status["entities"]["media"][0]["media_url"]
+            except:
+                memo["media"] = ""
+            try:
+                memo["url"] = status["entities"]["urls"][0]["expanded_url"]
+            except:
+                memo["url"] = ""
         memo["source"] = "DirectMessage"
         memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.write_memo(dbpath, memo)
         # リプを送信
-        self.api.send_direct_message(status["sender_id"], text="メモに登録しました[{}]".format(memo["time"]))
+        self.api.send_direct_message(sender, text="メモに登録しました[{}]".format(memo["time"]))
     
     def on_event(self, event):
         """フォロバ"""

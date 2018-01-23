@@ -9,11 +9,11 @@ def write_memo(path, memo):
         conn = sql.connect(path)
     else:
         conn = sql.connect(path)
-        conn.execute("""create table list (id integer, contents text, media text, url text,
-                        source text, time text)""")
+        conn.execute("""create table list (id integer, title text, contents text, media text,
+                        url text, source text, time text, reserve text)""")
         conn.commit()
-    SQL = "insert into list values(?,?,?,?,?,?)"
-    value = (memo["id"], memo["contents"], memo["media"], memo['url'], memo["source"], memo["time"])
+    SQL = "insert into list values(?,?,?,?,?,?,?,?)"
+    value = (memo["id"], memo["title"], memo["contents"], memo["media"], memo['url'], memo["source"], memo["time"], "")
     conn.execute(SQL, value)
     conn.commit()
     conn.close()
@@ -44,15 +44,21 @@ def get_list(path):
     cur = conn.cursor()
     cur.execute( "select * from list order by time desc" )
     for row in cur:
-        memolist.append({"id":row["id"], "contents":row["contents"], "media":row["media"], "url":row['url'], "time":row["time"]})
+        memolist.append({
+            "id":row["id"],
+            "title":row["title"],
+            "media":row["media"],
+            "url":row['url'],
+            "time":row["time"]
+        })
     cur.close()
     conn.close()
     return memolist
 
 # DBから詳細情報取得
-def get_detail(id, dbfile):
-    if os.path.exists(dbfile):
-        conn = sql.connect(dbfile)
+def get_detail(path, id):
+    if os.path.exists(path):
+        conn = sql.connect(path)
     else:
         raise ValueError
     conn.row_factory = sql.Row
@@ -61,8 +67,9 @@ def get_detail(id, dbfile):
     row = cur.fetchone()
     detail = {
         "id":row["id"],
+        "title":row["title"],
         "contents":row["contents"],
-        "media":row["media"],
+        "media":row["media"].split(","),
         "url":row["url"],
         "source":row["source"],
         "time":row["time"]
@@ -72,10 +79,10 @@ def get_detail(id, dbfile):
     return detail
 
 # DBから検索
-def search_db(mode, target, dbfile):
+def search_memo(path):
     images = []
-    if os.path.exists(dbfile):
-        conn = sql.connect(dbfile)
+    if os.path.exists(path):
+        conn = sql.connect(path)
     else:
         raise ValueError
     conn.row_factory = sql.Row
@@ -88,12 +95,3 @@ def search_db(mode, target, dbfile):
     cur.close()
     conn.close()
     return memolist
-
-# 埋め込み用HTMLの取得
-def get_html(url):
-    try:
-        r = requests.get("https://publish.twitter.com/oembed", {"url":url})
-        data = json.loads(r.text)
-        return data["html"]
-    except:
-        raise

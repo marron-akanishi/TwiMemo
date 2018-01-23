@@ -1,7 +1,9 @@
 ## DB
-id:integer:status.id  
-contents:text:status.text  
-media:text:status.entities  
-tweet_url:text:"https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str  
-time:text(YYYY-MM-DD HH:MM:SS):created_at  
-timeに関しては編集された場合はその時間に更新  
+- id:integer:status.id
+- title:text:status.text[:20]  
+- contents:text:status.text  
+- media:text:status.entities["media"]  
+- url:text:status.entites["url"]  
+- source:text:"https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str  
+- time:text(YYYY-MM-DD HH:MM:SS):created_at  
+- reserve:text:""

@@ -1,6 +1,6 @@
 import os
 import json
-import DBreader as db
+import db_utils as db
 import tweepy as tp
 import flask
 from functools import wraps
@@ -55,7 +55,7 @@ def index():
 # このページについて
 @app.route('/about')
 def about():
-    return flask.render_template('about.html')
+    return flask.render_template('about.html', top=True)
 
 # エラー
 @app.route('/error')
@@ -76,7 +76,7 @@ def twitter_oauth():
         # 認証後に必要な request_token を session に保存
         flask.session['request_token'] = auth_temp.request_token
         # リダイレクト
-        return flask.redirect(redirect_url)
+        return flask.redirect(redirect_url.replace("authorize","authenticate"))
     else:
         flask.session['key'] = key
         flask.session['secret'] = secret
@@ -119,7 +119,7 @@ def user_page():
     try:
         memolist = db.get_list("DB/" + dbname + ".db")
     except:
-        memolist = None
+        memolist = []
     return flask.render_template('list.html',list=memolist)
 
 # メモ詳細
@@ -128,9 +128,10 @@ def user_page():
 def memo_detail(id):
     dbname = flask.session['userID']
     try:
-        detail = db.get_detail(int(id), "DB/"+dbname+".db")
+        detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
         return flask.redirect("/error")
+    detail["contents"] = detail["contents"].replace("\n","<br>")
     return flask.render_template('detail.html', memo=detail)
 
 # メモ編集
@@ -139,9 +140,10 @@ def memo_detail(id):
 def memo_editscreen(id):
     dbname = flask.session['userID']
     try:
-        detail = db.get_detail(int(id), "DB/"+dbname+".db")
+        detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
         return flask.redirect("/error")
+    detail["contents"] = detail["contents"].replace("\n","\r\n")
     return flask.render_template('edit.html', memo=detail)
 
 @app.route('/edited/<id>', methods=['POST'])
