@@ -228,7 +228,7 @@ def memo_delete(id):
     db.del_memo("DB/"+dbname+".db", int(id))
     return "OK"
 
-# デバッグファイルサーバー
+# 画像サーバー
 @app.route('/uploads/<filename>')
 @login_check
 def uploaded_file(filename):

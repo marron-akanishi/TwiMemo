@@ -8,7 +8,7 @@ import threading
 import db_utils as db
 
 # スタート文字列
-start = "dev_memo"
+start = ""
 # パターン
 pattern = re.compile(r"https://twitter.com/\w*/status/\d*")
 
@@ -132,6 +132,7 @@ class TLThread(threading.Thread):
  
     def run(self):
         setting = json.load(open("setting.json"))
+        start = setting["HashTag"]
         auth = get_oauth(setting)
         stream = tp.Stream(auth, StreamListener(tp.API(auth)), secure=True)
         if setting['Debug']:

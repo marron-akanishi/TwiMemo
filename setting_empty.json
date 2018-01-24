@@ -1,5 +1,7 @@
 {
     "SecretKey": "qwertyuiopasdfghjkl",
+    "UploadServer": "http://localhost:5000/uploads",
+    "UploadDir": "./uploads",
     "twitter_API": {
         "CK": "",
         "CS": "",
@@ -7,5 +9,6 @@
         "Admin_Secret": "",
         "Callback_URL": "http://localhost:5000/authed"
     },
+    "HashTag": "dev_memo",
     "Debug": false
 }
