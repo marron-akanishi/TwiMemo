@@ -8,7 +8,7 @@ import threading
 import db_utils as db
 
 # スタート文字列
-start = ""
+hashtag = "memo"
 # パターン
 pattern = re.compile(r"https://twitter.com/\w*/status/\d*")
 
@@ -26,7 +26,7 @@ class StreamListener(tp.StreamListener):
     
     def make_memo(self, status):
         memo = {}
-        memo["contents"] = status.text.replace("#"+start,"").strip()
+        memo["contents"] = status.text.replace("#"+hashtag,"").strip()
         memo["title"] = memo["contents"]
         if len(memo["title"]) > 20:
             memo["title"] = memo["title"][:20] + "..."
@@ -50,8 +50,8 @@ class StreamListener(tp.StreamListener):
         get = False
         # ツイートにハッシュタグが入ってるか
         if hasattr(status, "entities") and "hashtags" in status.entities:
-            for hashtag in status.entities['hashtags']:
-                if hashtag['text'] == start:
+            for tag in status.entities['hashtags']:
+                if tag['text'] == hashtag:
                     get = True
                     break
         if get:
@@ -121,6 +121,7 @@ class StreamListener(tp.StreamListener):
 
 if __name__ == '__main__':
     setting = json.load(open("setting.json"))
+    hashtag = setting["HashTag"]
     auth = get_oauth(setting)
     stream = tp.Stream(auth, StreamListener(tp.API(auth)), secure=True)
     print("start")
@@ -132,7 +133,7 @@ class TLThread(threading.Thread):
  
     def run(self):
         setting = json.load(open("setting.json"))
-        start = setting["HashTag"]
+        hashtag = setting["HashTag"]
         auth = get_oauth(setting)
         stream = tp.Stream(auth, StreamListener(tp.API(auth)), secure=True)
         if setting['Debug']:
