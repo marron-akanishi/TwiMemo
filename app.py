@@ -229,6 +229,7 @@ def memo_delete(id):
 
 # デバッグファイルサーバー
 @app.route('/uploads/<filename>')
+@login_check
 def uploaded_file(filename):
     return flask.send_from_directory(setting['UploadDir'], filename)
 
