@@ -4,6 +4,7 @@ import db_utils as db
 import tweepy as tp
 import flask
 import uuid
+import html
 from functools import wraps
 from datetime import datetime
 import streaming
@@ -132,7 +133,7 @@ def memo_detail(id):
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
         return flask.redirect("/error")
-    detail["contents"] = detail["contents"].replace("\n","<br>")
+    detail["contents"] = html.escape(detail["contents"])
     return flask.render_template('detail.html', memo=detail)
 
 # メモ編集
@@ -188,7 +189,7 @@ def upload_file(file):
         filename = str(uuid.uuid4()) + "." + file.filename.split('.')[-1]
         file.save(setting['UploadDir'] + "/" + filename)
         url = setting['UploadServer'] + filename
-    return url
+    return "," + url
 
 @app.route('/make/<id>', methods=['POST'])
 @login_check
@@ -206,7 +207,7 @@ def memo_new(id):
     memo["media"] = ""
     for i in range(1,5):
         try:
-            memo["media"] += "," + upload_file(flask.request.files["media_"+str(i)])
+            memo["media"] += upload_file(flask.request.files["media_"+str(i)])
         except:
             continue
     memo["media"] = memo["media"][1:]

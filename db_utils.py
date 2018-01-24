@@ -5,6 +5,11 @@ import json
 
 # DBに書き込み
 def write_memo(path, memo):
+    temp = []
+    for media in memo["media"].split(','):
+        if media.startswith("http"):
+            temp.append(media)
+    memo["media"] = ','.join(temp)
     if os.path.exists(path):
         conn = sql.connect(path)
     else:
