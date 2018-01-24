@@ -12,7 +12,7 @@
     <label for="title" class="control-label">タイトル:</label>
     <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control">
     <label for="contents" class="control-label">内容:</label>
-    <textarea id="contents" name="contents" class="form-control">{{memo.contents}}</textarea>
+    <textarea id="contents" name="contents" class="form-control" required>{{memo.contents}}</textarea>
     <label for="media" class="control-label">画像(URL, コンマ区切りで複数指定可):</label>
     <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control">
     <label for="url" class="control-label">リンク(URL):</label>

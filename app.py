@@ -154,18 +154,20 @@ def memo_edit(id):
     memo = {}
     dbname = flask.session['userID']
     memo["id"] = int(id)
+    memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
     if flask.request.form["title"] != "":
         memo["title"] = flask.request.form["title"]
-    elif len(memo["contents"]) >= 20:
-        memo["title"] = memo["contents"] + "..."
-    memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
+    elif len(memo["contents"]) > 20:
+        memo["title"] = memo["contents"][:20] + "..."
+    else:
+        memo["title"] = memo["contents"]
     memo["media"] = flask.request.form["media"]
     memo["url"] = flask.request.form["url"]
     memo["source"] = "edited"
     memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
         db.update_memo("DB/"+dbname+".db", int(id), memo)
-        detail = db.get_detail(int(id), "DB/"+dbname+".db")
+        detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
         return flask.redirect("/error")
     return flask.redirect("/detail/"+id)
@@ -197,8 +199,8 @@ def memo_new(id):
     memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
     if flask.request.form["title"] != "":
         memo["title"] = flask.request.form["title"]
-    elif len(memo["contents"]) >= 20:
-        memo["title"] = memo["contents"] + "..."
+    elif len(memo["contents"]) > 20:
+        memo["title"] = memo["contents"][:20] + "..."
     else:
         memo["title"] = memo["contents"]
     memo["media"] = ""
