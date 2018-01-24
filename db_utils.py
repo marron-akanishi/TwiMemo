@@ -3,6 +3,8 @@ import sqlite3 as sql
 import requests
 import json
 
+setting = json.load(open("setting.json"))
+
 # DBに書き込み
 def write_memo(path, memo):
     temp = []
@@ -29,6 +31,18 @@ def del_memo(path, id):
         conn = sql.connect(path)
     else:
         raise ValueError
+    conn.row_factory = sql.Row
+    cur = conn.cursor()
+    cur.execute("select * from list where id = {}".format(id))
+    row = cur.fetchone()
+    media = row["media"].split(",")
+    cur.close()
+    for url in media:
+        if setting["UploadServer"] in url:
+            try:
+                os.remove(setting["UploadDir"] + "/" + url.split('/')[-1])
+            except:
+                continue
     conn.execute("delete from list where id = {}".format(id))
     conn.commit()
     conn.close()
