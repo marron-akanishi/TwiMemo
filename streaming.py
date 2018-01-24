@@ -8,7 +8,7 @@ import threading
 import db_utils as db
 
 # スタート文字列
-start = "#dev_memo"
+start = "dev_memo"
 # パターン
 pattern = re.compile(r"https://twitter.com/\w*/status/\d*")
 
@@ -26,7 +26,7 @@ class StreamListener(tp.StreamListener):
     
     def make_memo(self, status):
         memo = {}
-        memo["contents"] = status.text[len(start):].strip()
+        memo["contents"] = status.text.replace("#"+start,"").strip()
         memo["title"] = memo["contents"]
         if len(memo["title"]) > 20:
             memo["title"] = memo["title"][:20] + "..."
@@ -47,20 +47,32 @@ class StreamListener(tp.StreamListener):
         """UserStreamから飛んできたStatusを処理する"""
         if status.user.id == self.me.id:
             return
-        # ツイートが指定文字列から始まってるかどうか
-        if status.text.startswith(start):
+        get = False
+        # ツイートにハッシュタグが入ってるか
+        if hasattr(status, "entities") and "hashtags" in status.entities:
+            for hashtag in status.entities['hashtags']:
+                if hashtag['text'] == start:
+                    get = True
+                    break
+        if get:
             # DBのパスを生成
             dbpath = "DB/{}.db".format(status.user.id)
             # データ生成
+            user = status.user.screen_name
             memo = {}
             memo["id"] = status.id
             memo["source"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
             memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # リプか？
+            if hasattr(status, "in_reply_to_status_id") and status.in_reply_to_status_id is not None:
+                status = self.api.get_status(status.in_reply_to_status_id)
+                if user != status.user.screen_name:
+                    return
             content = self.make_memo(status)
             memo.update(content)
             db.write_memo(dbpath, memo)
             # リプを送信
-            self.api.update_status("@{} メモに登録しました[{}]".format(status.user.screen_name,memo["time"]), status.id)
+            self.api.update_status("@{} メモに登録しました[{}]".format(status.user.screen_name,memo["time"]), memo["id"])
 
     def on_direct_message(self, status):
         """DMの処理"""
