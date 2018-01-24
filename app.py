@@ -133,7 +133,7 @@ def memo_detail(id):
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
         return flask.redirect("/error")
-    detail["contents"] = html.escape(detail["contents"])
+    detail["contents"] = html.escape(detail["contents"]).replace("\n","<br>")
     return flask.render_template('detail.html', memo=detail)
 
 # メモ編集
