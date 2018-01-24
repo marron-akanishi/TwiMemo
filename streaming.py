@@ -91,7 +91,6 @@ class StreamListener(tp.StreamListener):
             if pattern.match(url):
                 status_id = url.split("/")[-1]
                 status = self.api.get_status(status_id)
-                status.text = start + status.text
                 content = self.make_memo(status)
                 memo.update(content)
         except:
