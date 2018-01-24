@@ -4,6 +4,7 @@ setting.json
 *.service
 *.out
 *.bat
+uploads/
 
 # Created by https://www.gitignore.io/api/django
 

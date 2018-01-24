@@ -3,6 +3,7 @@ import json
 import db_utils as db
 import tweepy as tp
 import flask
+import uuid
 from functools import wraps
 from datetime import datetime
 import streaming
@@ -144,6 +145,7 @@ def memo_editscreen(id):
     except:
         return flask.redirect("/error")
     detail["contents"] = detail["contents"].replace("\n","\r\n")
+    detail["media"] = ','.join(detail["media"])
     return flask.render_template('edit.html', memo=detail)
 
 @app.route('/edited/<id>', methods=['POST'])
@@ -152,12 +154,14 @@ def memo_edit(id):
     memo = {}
     dbname = flask.session['userID']
     memo["id"] = int(id)
-    memo["contents"] = flask.request.form["contents"]
+    if flask.request.form["title"] != "":
+        memo["title"] = flask.request.form["title"]
+    elif len(memo["contents"]) >= 20:
+        memo["title"] = memo["contents"] + "..."
+    memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
     memo["media"] = flask.request.form["media"]
-    if not memo["media"].startswith("http"):
-        memo["media"] = "null"
     memo["url"] = flask.request.form["url"]
-    memo["source"] = "編集済み"
+    memo["source"] = "edited"
     memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
         db.update_memo("DB/"+dbname+".db", int(id), memo)
@@ -166,6 +170,53 @@ def memo_edit(id):
         return flask.redirect("/error")
     return flask.redirect("/detail/"+id)
 
+# メモ追加
+@app.route('/new')
+@login_check
+def memo_newscreen():
+    memo = {}
+    memo["id"] = int(datetime.now().timestamp())
+    memo["contents"] = ""
+    memo["url"] = ""
+    return flask.render_template('new.html', memo=memo)
+
+def upload_file(file):
+    url = ""
+    if file.filename.split('.')[-1] in ['png', 'jpg']:
+        filename = str(uuid.uuid4()) + "." + file.filename.split('.')[-1]
+        file.save(setting['UploadDir'] + "/" + filename)
+        url = setting['UploadServer'] + filename
+    return url
+
+@app.route('/make/<id>', methods=['POST'])
+@login_check
+def memo_new(id):
+    memo = {}
+    dbname = flask.session['userID']
+    memo["id"] = int(id)
+    memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
+    if flask.request.form["title"] != "":
+        memo["title"] = flask.request.form["title"]
+    elif len(memo["contents"]) >= 20:
+        memo["title"] = memo["contents"] + "..."
+    else:
+        memo["title"] = memo["contents"]
+    memo["media"] = ""
+    for i in range(1,5):
+        try:
+            memo["media"] += "," + upload_file(flask.request.files["media_"+str(i)])
+        except:
+            continue
+    memo["media"] = memo["media"][1:]
+    memo["url"] = flask.request.form["url"]
+    memo["source"] = "web"
+    memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        db.write_memo("DB/"+dbname+".db", memo)
+    except:
+        return flask.redirect("/error")
+    return flask.redirect("/list")
+
 # メモ削除
 @app.route('/delete/<id>', methods=['DELETE'])
 @login_check
@@ -173,6 +224,11 @@ def memo_delete(id):
     dbname = flask.session['userID']
     db.del_memo("DB/"+dbname+".db", int(id))
     return "OK"
+
+# デバッグファイルサーバー
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return flask.send_from_directory(setting['UploadDir'], filename)
 
 if __name__ == '__main__':
     # debug server

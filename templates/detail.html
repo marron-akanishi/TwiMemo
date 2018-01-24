@@ -15,7 +15,11 @@
 {% endblock menu %}
 {% block contents %}
 <div class="container">
+  {% if "http" in memo.source %}
+  <h3><a href="{{memo.source}}" target="_blank">{{memo.title}}</a></h3>
+  {% else %}
   <h3>{{memo.title}}</h3>
+  {% endif %}
   <h5 class="text-right text-muted">{{memo.time}}</h5>
   <p>{{memo.contents|safe}}</p>
   <div class="row">

@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
 {% block menu %}
-<div class="container-fluid">
+<div class="container">
   <div class="alert alert-danger" role="alert">
-    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    <span class="sr-only">エラー:</span>
-    エラーが発生しました。最初からやり直してください。
+    <span class="oi oi-circle-x"> エラーが発生しました。最初からやり直してください。</span>
   </div>
-  <input type="button" class="btn btn-danger" onclick="location.href='/logout'" value="ログアウト">
+  <input type="button" class="btn btn-default" onclick="location.href='/'" value="トップに戻る">
 </div>
 {% endblock menu %}

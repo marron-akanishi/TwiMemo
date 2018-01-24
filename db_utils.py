@@ -10,10 +10,10 @@ def write_memo(path, memo):
     else:
         conn = sql.connect(path)
         conn.execute("""create table list (id integer, title text, contents text, media text,
-                        url text, source text, time text, reserve text)""")
+                        url text, source text, time text, remind text,  reserve text)""")
         conn.commit()
-    SQL = "insert into list values(?,?,?,?,?,?,?,?)"
-    value = (memo["id"], memo["title"], memo["contents"], memo["media"], memo['url'], memo["source"], memo["time"], "")
+    SQL = "insert into list values(?,?,?,?,?,?,?,?,?)"
+    value = (memo["id"], memo["title"], memo["contents"], memo["media"], memo['url'], memo["source"], memo["time"], "", "")
     conn.execute(SQL, value)
     conn.commit()
     conn.close()
