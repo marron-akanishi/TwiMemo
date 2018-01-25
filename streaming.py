@@ -96,7 +96,7 @@ class StreamListener(tp.StreamListener):
         except:
             memo["contents"] = status["text"]
             memo["title"] = memo["contents"]
-            if len(title) > 20:
+            if len(memo["title"]) > 20:
                 memo["title"] = memo["title"][:20] + "..."
             try:
                 memo["media"] = status["entities"]["media"][0]["media_url"]
