@@ -1,17 +1,11 @@
 {% extends "layout.html" %}
 {% block menu %}
-<script src="/static/js/util.js"></script>
 <script src="/static/js/jquery.autoexpand.js"></script>
 <div class="container">
   <input type="button" class="btn btn-default" onclick="location.href='/list'" value="リストに戻る">
 </div>
 {% endblock menu %}
 {% block contents %}
-<style type="text/css">
-  .margin {
-    margin-bottom: 5px;
-  }
-</style>
 <div class="container">
   <form method="POST" action="/make/{{memo.id}}" class="form-horizontal" enctype="multipart/form-data">
     <label for="title" class="control-label">タイトル:</label>

@@ -1,19 +1,17 @@
 {% extends "layout.html" %}
 {% block menu %}
-<script src="/static/js/util.js"></script>
 <div class="container">
   <div class="alert alert-success" role="alert">@{{session['name']}}としてログインしました</div>
   <div class="row justify-content-between">
     <div class="col-auto">
       <button class="btn btn-primary" onclick="location.href='/new'">＋ 新規追加</button>
     </div>
-    <div class="col-auto d-none d-md-block">
-      <form class="form-inline">
+    <div class="col-auto">
+      <form class="form-inline d-none d-sm-block">
         <input type="text" class="form-control" id="search_word" style="margin-right: 5px;">
-        <button class="btn btn-primary" onclick="">
-          <span class="oi oi-magnifying-glass"> 検索</span>
-        </button>
+        <input type="submit" class="btn btn-primary" value="検索">
       </form>
+      <button class="btn btn-primary d-sm-none" onclick="window.scrollTo(0,document.body.scrollHeight);">検索へ</button>
     </div>
   </div>
 </div>
@@ -23,9 +21,9 @@
   <div class="row">
   {% for memo in list %}
   <div class="col-md-6">
-    <div class="card" style="margin-bottom: 5px;">
+    <div class="card margin">
       <div class="card-body">
-        <h5 class="card-title">{{memo.title}}</h5>
+        <h5 class="card-title text-short">{{memo.title}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{memo.time}}</h6>
         <div class="row justify-content-between">
           <div class="col-auto">
@@ -46,5 +44,9 @@
   </div>
   {% endfor %}
   </div>
+  <form class="d-sm-none">
+    <input type="text" class="form-control margin" id="search_word">
+    <div style="text-align: right"><input type="submit" class="btn btn-primary" value="検索"></div>
+  </form>
 </div>
 {% endblock contents %}

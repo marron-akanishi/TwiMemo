@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block menu %}
-<script src="/static/js/util.js"></script>
 <div class="container">
   <div class="row justify-content-between">
     <div class="col-auto">
@@ -21,11 +20,11 @@
   <h3>{{memo.title}}</h3>
   {% endif %}
   <h5 class="text-right text-muted">{{memo.time}}</h5>
-  <p>{{memo.contents|safe}}</p>
+  <p class="text-wrap">{{memo.contents|safe}}</p>
   <div class="row">
     {% for url in memo.media %}
     {% if url != "" %}
-    <div class="col-md" style="margin-bottom: 5px;">
+    <div class="col-md-6" style="margin-bottom: 5px;">
       <a href="{{url}}" target="_blank">
         <img src="{{url}}" class="img-thumbnail"></img>
       </a>
@@ -33,7 +32,7 @@
     {% endif %}
     {% endfor %}
   </div>
-  <p>
+  <p class="text-short">
     <a href="{{memo.url}}" target="_blank">{{memo.url}}</a>
   </p>
 </div>

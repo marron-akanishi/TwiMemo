@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block menu %}
-<script src="/static/js/util.js"></script>
 <script src="/static/js/jquery.autoexpand.js"></script>
 <div class="container">
   <input type="button" class="btn btn-default" onclick="location.href='/detail/{{memo.id}}'" value="詳細に戻る">
@@ -10,13 +9,13 @@
 <div class="container">
   <form method="POST" action="/edited/{{memo.id}}" class="form-horizontal">
     <label for="title" class="control-label">タイトル:</label>
-    <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control">
+    <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control margin">
     <label for="contents" class="control-label">内容:</label>
-    <textarea id="contents" name="contents" class="form-control" required>{{memo.contents}}</textarea>
+    <textarea id="contents" name="contents" class="form-control margin" required>{{memo.contents}}</textarea>
     <label for="media" class="control-label">画像(URL, コンマ区切りで複数指定可):</label>
-    <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control">
+    <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control margin">
     <label for="url" class="control-label">リンク(URL):</label>
-    <input type="text" id="url" name="url" value="{{memo.url}}" class="form-control">
+    <input type="text" id="url" name="url" value="{{memo.url}}" class="form-control margin">
     <br>
     <input type="submit" value="更新" class="btn btn-primary">
   </form>

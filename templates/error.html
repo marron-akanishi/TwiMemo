@@ -2,7 +2,7 @@
 {% block menu %}
 <div class="container">
   <div class="alert alert-danger" role="alert">
-    <span class="oi oi-circle-x"> エラーが発生しました。最初からやり直してください。</span>
+    <span class="oi oi-circle-x"> {{message}}</span>
   </div>
   <input type="button" class="btn btn-default" onclick="location.href='/'" value="トップに戻る">
 </div>

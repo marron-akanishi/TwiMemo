@@ -11,24 +11,31 @@ import streaming
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+ErrorMessage = {
+    "-1": "不明なエラーが発生しました。",
+    "101": "メモの詳細取得に失敗しました。",
+    "102": "データベースの更新に失敗しました。"
+}
+
 # 自身の名称を app という名前でインスタンス化する
 app = flask.Flask(__name__)
 setting = json.load(open("setting.json"))
 app.secret_key = setting['SecretKey']
 app.debug = setting['Debug'] # デバッグモード
 
-# 回収
+# TL監視
 if(setting['Debug'] == False):
     t1 = streaming.TLThread()
     t1.setDaemon(True)
     t1.start()
 
-# 認証後に使用可能
+# Twitter認証
 def tp_api():
     auth = tp.OAuthHandler(setting['twitter_API']['CK'], setting['twitter_API']['CS'], setting['twitter_API']['Callback_URL'])
     auth.set_access_token(flask.session['key'],flask.session['secret'])
     return tp.API(auth)
 
+# ログインチェック
 def login_check(func):
     @wraps(func)
     def checker(*args, **kwargs):
@@ -48,7 +55,7 @@ def index():
     key = flask.request.cookies.get('key')
     secret = flask.request.cookies.get('secret')
     if key is None or secret is None:
-        return flask.render_template('index.html', top=True)
+        return flask.render_template('index.html')
     else:
         flask.session['key'] = key
         flask.session['secret'] = secret
@@ -57,12 +64,16 @@ def index():
 # このページについて
 @app.route('/about')
 def about():
-    return flask.render_template('about.html', top=True)
+    return flask.render_template('about.html',)
 
 # エラー
-@app.route('/error')
-def error():
-    return flask.render_template('error.html')
+@app.errorhandler(404)
+@app.route('/error', methods=['GET'])
+def error(code):
+    code = flask.request.args.get('code')
+    if not code:
+        code = "-1"
+    return flask.render_template('error.html', message=ErrorMessage[code])
 
 # twitter認証
 @app.route('/twitter_auth', methods=['GET'])
@@ -132,11 +143,11 @@ def memo_detail(id):
     try:
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
-        return flask.redirect("/error")
+        return flask.redirect(flask.url_for("error", code="101"))
     detail["contents"] = html.escape(detail["contents"]).replace("\n","<br>")
     return flask.render_template('detail.html', memo=detail)
 
-# メモ編集
+# メモ編集画面
 @app.route('/edit/<id>')
 @login_check
 def memo_editscreen(id):
@@ -144,11 +155,12 @@ def memo_editscreen(id):
     try:
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
-        return flask.redirect("/error")
+        return flask.redirect(flask.url_for("error", code="101"))
     detail["contents"] = detail["contents"].replace("\n","\r\n")
     detail["media"] = ','.join(detail["media"])
     return flask.render_template('edit.html', memo=detail)
 
+# 編集登録
 @app.route('/edited/<id>', methods=['POST'])
 @login_check
 def memo_edit(id):
@@ -170,7 +182,7 @@ def memo_edit(id):
         db.update_memo("DB/"+dbname+".db", int(id), memo)
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
-        return flask.redirect("/error")
+        return flask.redirect(flask.url_for("error", code="102"))
     return flask.redirect("/detail/"+id)
 
 # メモ追加
@@ -191,6 +203,7 @@ def upload_file(file):
         url = setting['UploadServer'] + filename
     return "," + url
 
+# 追加登録
 @app.route('/make/<id>', methods=['POST'])
 @login_check
 def memo_new(id):
@@ -217,7 +230,7 @@ def memo_new(id):
     try:
         db.write_memo("DB/"+dbname+".db", memo)
     except:
-        return flask.redirect("/error")
+        return flask.redirect(flask.url_for("error", code="102"))
     return flask.redirect("/list")
 
 # メモ削除
@@ -234,6 +247,6 @@ def memo_delete(id):
 def uploaded_file(filename):
     return flask.send_from_directory(setting['UploadDir'], filename)
 
+# デバッグ用
 if __name__ == '__main__':
-    # debug server
-    app.run(host='0.0.0.0') # どこからでもアクセス可能に
+    app.run(host='0.0.0.0')
