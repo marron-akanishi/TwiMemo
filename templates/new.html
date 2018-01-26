@@ -8,19 +8,23 @@
 {% block contents %}
 <div class="container">
   <form method="POST" action="/make/{{memo.id}}" class="form-horizontal" enctype="multipart/form-data">
-    <label for="title" class="control-label">タイトル:</label>
-    <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control margin">
-    <label for="contents" class="control-label">内容:</label>
-    <textarea id="contents" name="contents" class="form-control margin" required>{{memo.contents}}</textarea>
-    {% for i in range(1,5) %}
-    <label for="sel_{{i}}" class="control-label">画像{{i}}:</label>
-    <div class="custom-file margin" id="sel_{{i}}">
-      <input type="file" class="custom-file-input" id="media_{{i}}" name="media_{{i}}" onchange="$('#sel_{{i}} > label').text($('#media_{{i}}').val().split('\\').pop());">
-      <label class="custom-file-label" for="media_{{i}}">PNG,JPEGのみ可</label>
+    <h5>タイトル</h5>
+    <input type="text" id="title" name="title" class="form-control margin">
+    <h5>内容(必須)</h5>
+    <textarea id="contents" name="contents" class="form-control margin" required></textarea>
+    <div class="image-repeater">
+      <h5>画像</h5>
+      <div class="custom-file margin">
+        <input type="file" class="custom-file-input" id="media" name="media" onchange="">
+        <label class="custom-file-label" for="media">PNG,JPEGのみ可</label>
+      </div>
+      <button class="btn btn-outline-primary margin">＋</button>
     </div>
-    {% endfor %}
-    <label for="url" class="control-label">リンク(URL):</label>
-    <input type="text" id="url" name="url" value="{{memo.url}}" class="form-control margin">
+    <div>
+      <h5>リンク</h5>
+      <input type="text" id="url" name="url" class="form-control margin">
+      <button class="btn btn-outline-primary margin">＋</button>
+    </div>
     <br>
     <input type="submit" value="追加" class="btn btn-primary">
   </form>

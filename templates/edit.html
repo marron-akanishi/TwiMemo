@@ -8,14 +8,20 @@
 {% block contents %}
 <div class="container">
   <form method="POST" action="/edited/{{memo.id}}" class="form-horizontal">
-    <label for="title" class="control-label">タイトル:</label>
+    <h5>タイトル</h5>
     <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control margin">
-    <label for="contents" class="control-label">内容:</label>
+    <h5>内容(必須)</h5>
     <textarea id="contents" name="contents" class="form-control margin" required>{{memo.contents}}</textarea>
-    <label for="media" class="control-label">画像(URL, コンマ区切りで複数指定可):</label>
-    <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control margin">
-    <label for="url" class="control-label">リンク(URL):</label>
-    <input type="text" id="url" name="url" value="{{memo.url}}" class="form-control margin">
+    <div class="image-repeater">
+      <h5>画像</h5>
+      <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control margin">
+      <button class="btn btn-outline-primary margin">＋</button>
+    </div>
+    <div>
+      <h5>リンク</h5>
+      <input type="text" id="url" name="url" value="{{memo.url}}" class="form-control margin">
+      <button class="btn btn-outline-primary margin">＋</button>
+    </div>
     <br>
     <input type="submit" value="更新" class="btn btn-primary">
   </form>

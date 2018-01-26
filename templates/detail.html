@@ -24,7 +24,7 @@
   <div class="row">
     {% for url in memo.media %}
     {% if url != "" %}
-    <div class="col-md-6" style="margin-bottom: 5px;">
+    <div class="col-md-6 margin">
       <a href="{{url}}" target="_blank">
         <img src="{{url}}" class="img-thumbnail"></img>
       </a>
@@ -32,8 +32,16 @@
     {% endif %}
     {% endfor %}
   </div>
-  <p class="text-short">
-    <a href="{{memo.url}}" target="_blank">{{memo.url}}</a>
-  </p>
+  {% if memo.url != "" %}
+  <div class="row">
+    {% for url in memo.url %}
+    {% if url != "" %}
+    <div class="col-md-6 margin">
+      <button type="button" class="btn btn-outline-info btn-sm text-short" onclick="window.open('{{url}}')">{{url}}</button>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
 {% endblock contents %}

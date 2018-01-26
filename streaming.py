@@ -10,7 +10,8 @@ import db_utils as db
 # スタート文字列
 hashtag = "memo"
 # パターン
-pattern = re.compile(r"https://twitter.com/\w*/status/\d*")
+status_url = re.compile(r"https://twitter.com/\w*/status/\d*")
+message_url = re.compile(r"https://twitter.com/messages/media/\d*")
 
 def get_oauth(setting):
     """設定ファイルから各種キーを取得し、OAUTH認証を行う"""
@@ -37,10 +38,12 @@ class StreamListener(tp.StreamListener):
                 for image in status_media['media']:
                     media_url.append(image['media_url'])
         memo["media"] = ','.join(media_url)
-        try:
-            memo["url"] = status.entities["urls"][0]["expanded_url"]
-        except:
-            memo["url"] = ""
+        urls = []
+        if hasattr(status, "entities"):
+            if 'urls' in status.entities:
+                for url in status.entities["urls"]:
+                    urls.append(url['expanded_url'])
+        memo["url"] = '|'.join(urls)
         return memo
 
     def on_status(self, status):
@@ -66,8 +69,6 @@ class StreamListener(tp.StreamListener):
             # リプか？
             if hasattr(status, "in_reply_to_status_id") and status.in_reply_to_status_id is not None:
                 status = self.api.get_status(status.in_reply_to_status_id)
-                if user != status.user.screen_name:
-                    return
             content = self.make_memo(status)
             memo.update(content)
             db.write_memo(dbpath, memo)
@@ -88,24 +89,31 @@ class StreamListener(tp.StreamListener):
         # 引用ツイートチェック
         try:
             url = status["entities"]["urls"][0]["expanded_url"]
-            if pattern.match(url):
+            if status_url.match(url):
                 status_id = url.split("/")[-1]
                 status = self.api.get_status(status_id)
                 content = self.make_memo(status)
                 memo.update(content)
+            else:
+                raise ValueError
         except:
             memo["contents"] = status["text"]
             memo["title"] = memo["contents"]
             if len(memo["title"]) > 20:
                 memo["title"] = memo["title"][:20] + "..."
-            try:
-                memo["media"] = status["entities"]["media"][0]["media_url"]
-            except:
-                memo["media"] = ""
-            try:
-                memo["url"] = status["entities"]["urls"][0]["expanded_url"]
-            except:
-                memo["url"] = ""
+            media_url = []
+            if "entities" in status and 'media' in status["entities"]:
+                status_media = status["entities"]["media"]
+                for image in status_media:
+                    media_url.append(image['media_url'])
+            memo["media"] = ",".join(media_url)
+            urls = []
+            if "entities" in status and 'urls' in status["entities"]:
+                status_urls = status["entities"]["urls"]
+                for url in status_urls:
+                    if not message_url_url.match(url):
+                        urls.append(url['expanded_url'])
+            memo["url"] = "|".join(urls)
         memo["source"] = "DirectMessage"
         memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.write_memo(dbpath, memo)

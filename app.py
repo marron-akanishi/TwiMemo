@@ -62,9 +62,9 @@ def index():
         return flask.redirect(flask.url_for('twitter_authed', cookie=True))
 
 # このページについて
-@app.route('/about')
-def about():
-    return flask.render_template('about.html',)
+@app.route('/help')
+def help():
+    return flask.render_template('help.html',)
 
 # エラー
 @app.errorhandler(404)
@@ -158,6 +158,7 @@ def memo_editscreen(id):
         return flask.redirect(flask.url_for("error", code="101"))
     detail["contents"] = detail["contents"].replace("\n","\r\n")
     detail["media"] = ','.join(detail["media"])
+    detail["url"] = '|'.join(detail["url"])
     return flask.render_template('edit.html', memo=detail)
 
 # 編集登録
@@ -191,8 +192,6 @@ def memo_edit(id):
 def memo_newscreen():
     memo = {}
     memo["id"] = int(datetime.now().timestamp())
-    memo["contents"] = ""
-    memo["url"] = ""
     return flask.render_template('new.html', memo=memo)
 
 def upload_file(file):

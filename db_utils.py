@@ -89,7 +89,7 @@ def get_detail(path, id):
         "title":row["title"],
         "contents":row["contents"],
         "media":row["media"].split(","),
-        "url":row["url"],
+        "url":row["url"].split("|"),
         "source":row["source"],
         "time":row["time"]
     }

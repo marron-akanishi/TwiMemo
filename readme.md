@@ -1,4 +1,5 @@
-## DB
+## メモ
+### DB
 - id:integer:status.id
 - title:text:status.text[:20]  
 - contents:text:status.text  
@@ -8,3 +9,6 @@
 - time:text(YYYY-MM-DD HH:MM:SS):created_at  
 - remind:text(YYYY-MM-DD):""
 - reserve:text:""
+
+### 使ってるやつ  
+https://github.com/pekko1215/Nobeer
