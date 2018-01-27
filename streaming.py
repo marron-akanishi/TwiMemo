@@ -30,7 +30,7 @@ class StreamListener(tp.StreamListener):
         memo["contents"] = status.text.replace("#"+hashtag,"").strip()
         memo["title"] = memo["contents"]
         if len(memo["title"]) > 20:
-            memo["title"] = memo["title"][:20] + "..."
+            memo["title"] = memo["title"][:17] + "..."
         media_url = []
         if hasattr(status, "extended_entities"):
             if 'media' in status.extended_entities:
@@ -101,7 +101,7 @@ class StreamListener(tp.StreamListener):
             memo["contents"] = status["text"]
             memo["title"] = memo["contents"]
             if len(memo["title"]) > 20:
-                memo["title"] = memo["title"][:20] + "..."
+                memo["title"] = memo["title"][:17] + "..."
             media_url = []
             if "entities" in status and 'media' in status["entities"]:
                 status_media = status["entities"]["media"]
