@@ -64,16 +64,16 @@ class StreamListener(tp.StreamListener):
             user = status.user.screen_name
             memo = {}
             memo["id"] = status.id
-            memo["source"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
             memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # リプか？
             if hasattr(status, "in_reply_to_status_id") and status.in_reply_to_status_id is not None:
                 status = self.api.get_status(status.in_reply_to_status_id)
+            memo["source"] = "https://twitter.com/" + status.user.screen_name + "/status/" + status.id_str
             content = self.make_memo(status)
             memo.update(content)
             db.write_memo(dbpath, memo)
             # リプを送信
-            self.api.update_status("@{} メモに登録しました[{}]".format(status.user.screen_name,memo["time"]), memo["id"])
+            self.api.update_status("@{} メモに登録しました[{}]".format(user,memo["time"]), memo["id"])
 
     def on_direct_message(self, status):
         """DMの処理"""
