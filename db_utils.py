@@ -68,7 +68,8 @@ def get_list(path):
             "title":row["title"],
             "media":row["media"],
             "url":row['url'],
-            "time":row["time"]
+            "time":row["time"],
+            "remind":row["remind"]
         })
     cur.close()
     conn.close()
@@ -98,19 +99,23 @@ def get_detail(path, id):
     return detail
 
 # DBから検索
-def search_memo(path):
-    images = []
+def search_list(path, search):
+    memolist = []
     if os.path.exists(path):
         conn = sql.connect(path)
     else:
         raise ValueError
     conn.row_factory = sql.Row
     cur = conn.cursor()
-    cur.execute("select count(filename) from {} where username like '%{}%'".format(table,userid))
-    count = cur.fetchone()[0]
-    cur.execute( "select * from {} where username like '%{}%'".format(table,userid) )
+    cur.execute("select * from list where contents like ? escape '$' order by time desc",("%"+search+"%",))
     for row in cur:
-        images.append({"id":int(row["filename"]), "tags":row["tags"][1:-1], "image":row["image"]})
+        memolist.append({
+            "id":row["id"],
+            "title":row["title"],
+            "media":row["media"],
+            "url":row['url'],
+            "time":row["time"]
+        })
     cur.close()
     conn.close()
     return memolist

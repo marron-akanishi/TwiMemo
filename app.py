@@ -5,6 +5,7 @@ import tweepy as tp
 import flask
 import uuid
 import html
+import urllib
 from functools import wraps
 from datetime import datetime
 import streaming
@@ -16,6 +17,12 @@ ErrorMessage = {
     "101": "メモの詳細取得に失敗しました。",
     "102": "データベースの更新に失敗しました。"
 }
+
+sql_escape = str.maketrans({
+    '%': '$%',
+    '_': '$_',
+    '$': '$$',
+})
 
 # 自身の名称を app という名前でインスタンス化する
 app = flask.Flask(__name__)
@@ -40,11 +47,10 @@ def login_check(func):
     @wraps(func)
     def checker(*args, **kwargs):
         # きちんと認証していればセッション情報がある
-        try:
-            if flask.session['userID'] is None:
-                return flask.redirect(flask.url_for('index'))
-        except:
-            return flask.redirect(flask.url_for('index'))
+        if (not "userID" in flask.session) or flask.session['userID'] is None:
+            if "id" in kwargs:
+                flask.session['memo_id'] = kwargs['id']
+            return flask.redirect(flask.url_for('twitter_oauth'))
         return func(*args, **kwargs)
     return checker
 
@@ -76,7 +82,7 @@ def error(code):
     return flask.render_template('error.html', message=ErrorMessage[code])
 
 # twitter認証
-@app.route('/twitter_auth', methods=['GET'])
+@app.route('/twitter_auth')
 def twitter_oauth():
     # cookieチェック
     key = flask.request.cookies.get('key')
@@ -109,7 +115,11 @@ def twitter_authed():
     # 認証ユーザー取得
     flask.session['name'] = tp_api().me().screen_name
     flask.session['userID'] = tp_api().me().id_str
-    response = flask.make_response(flask.redirect(flask.url_for('user_page')))
+    if 'memo_id' in flask.session:
+        response = flask.make_response(flask.redirect(flask.url_for('memo_detail', id=int(flask.session['memo_id']))))
+        flask.session['memo_id'] = None
+    else:
+        response = flask.make_response(flask.redirect(flask.url_for('memo_list')))
     response.set_cookie('key', flask.session['key'])
     response.set_cookie('secret', flask.session['secret'])
     return response
@@ -125,12 +135,17 @@ def logout():
 
 # こっから下は認証が必要
 # リスト
-@app.route('/list')
+@app.route('/list', methods=['GET'])
 @login_check
-def user_page():
+def memo_list():
     dbname = flask.session['userID']
+    search = flask.request.args.get('search','')
     try:
-        memolist = db.get_list("DB/" + dbname + ".db")
+        if search:
+            search = urllib.parse.unquote(search).translate(sql_escape)
+            memolist = db.search_list("DB/" + dbname + ".db", search)
+        else:
+            memolist = db.get_list("DB/" + dbname + ".db")
     except:
         memolist = []
     return flask.render_template('list.html',list=memolist)
@@ -150,7 +165,7 @@ def memo_detail(id):
 # メモ編集画面
 @app.route('/edit/<id>')
 @login_check
-def memo_editscreen(id):
+def memo_edit(id):
     dbname = flask.session['userID']
     try:
         detail = db.get_detail("DB/"+dbname+".db", int(id))
@@ -162,7 +177,7 @@ def memo_editscreen(id):
 # 編集登録
 @app.route('/edited/<id>', methods=['POST'])
 @login_check
-def memo_edit(id):
+def memo_update(id):
     memo = {}
     dbname = flask.session['userID']
     memo["id"] = int(id)
@@ -187,7 +202,7 @@ def memo_edit(id):
 # メモ追加
 @app.route('/new')
 @login_check
-def memo_newscreen():
+def memo_new():
     memo = {}
     memo["id"] = int(datetime.now().timestamp())
     return flask.render_template('new.html', memo=memo)
@@ -203,7 +218,7 @@ def upload_file(file):
 # 追加登録
 @app.route('/make/<id>', methods=['POST'])
 @login_check
-def memo_new(id):
+def memo_add(id):
     memo = {}
     dbname = flask.session['userID']
     memo["id"] = int(id)

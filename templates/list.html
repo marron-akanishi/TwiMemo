@@ -7,8 +7,8 @@
       <button class="btn btn-primary" onclick="location.href='/new'">＋ 新規追加</button>
     </div>
     <div class="col-auto">
-      <form class="form-inline d-none d-sm-block">
-        <input type="text" class="form-control" id="search_word" style="margin-right: 5px;">
+      <form action="/list" method="GET" class="form-inline d-none d-sm-block">
+        <input type="text" class="form-control" name="search" style="margin-right: 5px;">
         <input type="submit" class="btn btn-primary" value="検索">
       </form>
       <button class="btn btn-primary d-sm-none" onclick="window.scrollTo(0,document.body.scrollHeight);">検索へ</button>
@@ -33,6 +33,9 @@
             {% if memo.url != "" %}
             <span class="oi oi-bookmark"></span>
             {% endif %}
+            {% if memo.remind != "" %}
+            <span class="oi oi-bell"></span>
+            {% endif %}
           </div>
           <div class="col-auto">
             <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
@@ -44,8 +47,8 @@
   </div>
   {% endfor %}
   </div>
-  <form class="d-sm-none">
-    <input type="text" class="form-control margin" id="search_word">
+  <form action="/list" method="GET" class="d-sm-none">
+    <input type="text" class="form-control margin" name="search">
     <div style="text-align: right"><input type="submit" class="btn btn-primary" value="検索"></div>
   </form>
 </div>
