@@ -73,14 +73,14 @@
       <p>リストページ
         <br>ログインすると最初にこのページが表示されます。
         <br>
-        <div class="d-none d-md-block">
+        <div class="d-none d-md-block border">
           <img src="/static/images/list-pc.png" alt="リストページ(PC)">
         </div>
-        <div class="d-md-none">
+        <div class="d-md-none border">
           <img src="/static/images/list-sp.png" alt="リストページ(SP)">
         </div>
         <br>ここにはメモのリストが表示されます。また、新規追加ボタンがあります。
-        <br>メモごとにタイトル、日時、詳細ボタン、削除ボタンが存在します。また、アイコンが表示されることがある。
+        <br>メモごとにタイトル、日時、詳細ボタン、削除ボタンが存在します。また、アイコンが表示されることがあります。
         <br>タイトルには、メモの最初の20文字までが表示されます。
         <br>これをTwiMemoではタイトルとして登録しています。タイトルは編集ページで変更可能です。
         <br>タイトルの下には登録日時が表示されます。リストはこれの順番で並んでいます。
@@ -88,18 +88,18 @@
         <br>詳細ボタンを押すとメモの詳細を確認することが可能です。
         <br>削除ボタンを押すとメモを削除することが出来ます。削除する際は確認メッセージが表示されます。
         <br>また、メモにはアイコンが付いてるものが出来ます。アイコンの意味は以下のとおりです。
-        <br>画像アイコン→画像が添付されていることを示しています。
-        <br>栞アイコン→リンクが添付されていることを示しています。 検索用のフォームがありますが、まだ実装されていません。
-        <br>実装時にはお知らせします。 </p>
+        <br><span class="oi oi-image"></span>→画像が添付されていることを示しています。
+        <br><span class="oi oi-bookmark"></span>→リンクが添付されていることを示しています。
+        <br>検索用のフォームがありますが、まだ実装されていません。 実装時にはお知らせします。</p>
     </li>
     <li>
       <p>詳細ページ
         <br>リストページで詳細ボタンを押すとメモごとの詳細ページに飛びます。
         <br>
-        <div class="d-none d-md-block">
+        <div class="d-none d-md-block border">
           <img src="/static/images/detail-pc.png" alt="詳細ページ(PC)">
         </div>
-        <div class="d-md-none">
+        <div class="d-md-none border">
           <img src="/static/images/detail-sp.png" alt="詳細ページ(SP)">
         </div>
         <br>この画面では、ページの名前通りメモの詳細を表示します。
@@ -115,10 +115,10 @@
       <p>編集ページ
         <br>詳細ページで編集ボタンを押すと編集ページに飛びます。
         <br>
-        <div class="d-none d-md-block">
+        <div class="d-none d-md-block border">
           <img src="/static/images/edit-pc.png" alt="編集ページ(PC)">
         </div>
-        <div class="d-md-none">
+        <div class="d-md-none border">
           <img src="/static/images/edit-sp.png" alt="編集ページ(SP)">
         </div>
         <br>この画面では、メモの編集が可能です。
@@ -128,17 +128,18 @@
         <br>画像も追加、削除が出来ます。枚数を増やしたり、減らしたりする場合は－、＋ボタンを利用してください。
         <br>ただし、ここでの画像追加はURLでのみ可能です。後から追加する場合は予めどこかのサービスにアップロードしてください。
         <br>リンクも画像同様に追加、削除が可能です。
-        <br>編集が完了したら更新ボタンを押してください。サーバーに送信後、詳細ページに戻ります。 メモの日時はサーバーに送信された日時で保存してあります。また、タイトル用に保存している元のツイートへのURLは消えますので、ご注意ください。
+        <br>編集が完了したら更新ボタンを押してください。サーバーに送信後、詳細ページに戻ります。
+        <br>メモの日時はサーバーに送信された日時で保存してあります。また、タイトル用に保存している元のツイートへのURLは消えますので、ご注意ください。
       </p>
     </li>
     <li>
       <p>新規追加ページ
         <br>リストページにある新規追加ボタンを押すと新規追加ページに飛びます。
         <br>
-        <div class="d-none d-md-block">
+        <div class="d-none d-md-block border">
           <img src="/static/images/new-pc.png" alt="新規追加ページ(PC)">
         </div>
-        <div class="d-md-none">
+        <div class="d-md-none border">
           <img src="/static/images/new-sp.png" alt="新規追加ページ(SP)">
         </div>
         <br>編集ページとほとんど同じUIで機能もほぼ一緒です。ただし、画像に関する部分が異なります。
