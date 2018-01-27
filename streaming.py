@@ -112,7 +112,7 @@ class StreamListener(tp.StreamListener):
             if "entities" in status and 'urls' in status["entities"]:
                 status_urls = status["entities"]["urls"]
                 for url in status_urls:
-                    if not message_url_url.match(url):
+                    if not message_url.match(url['expanded_url']):
                         urls.append(url['expanded_url'])
             memo["url"] = "|".join(urls)
             memo["source"] = "DirectMessage"
