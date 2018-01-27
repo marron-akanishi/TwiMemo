@@ -185,7 +185,7 @@ def memo_update(id):
     if flask.request.form["title"] != "":
         memo["title"] = flask.request.form["title"]
     elif len(memo["contents"]) > 20:
-        memo["title"] = memo["contents"][:20] + "..."
+        memo["title"] = memo["contents"][:20]
     else:
         memo["title"] = memo["contents"]
     memo["media"] = flask.request.form["media"]
@@ -215,7 +215,7 @@ def upload_file(file):
         url = setting['UploadServer'] + filename
     return url
 
-# 追加登録
+# 新規登録
 @app.route('/make/<id>', methods=['POST'])
 @login_check
 def memo_add(id):
@@ -226,7 +226,7 @@ def memo_add(id):
     if flask.request.form["title"] != "":
         memo["title"] = flask.request.form["title"]
     elif len(memo["contents"]) > 20:
-        memo["title"] = memo["contents"][:20] + "..."
+        memo["title"] = memo["contents"][:20]
     else:
         memo["title"] = memo["contents"]
     memo["media"] = []

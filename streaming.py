@@ -24,13 +24,19 @@ class StreamListener(tp.StreamListener):
         """コンストラクタ"""
         self.api = api
         self.me = self.api.me()
+
+    def on_error(self, status_code):
+        return True
+
+    def on_timeout(self):
+        return True
     
     def make_memo(self, status):
         memo = {}
         memo["contents"] = status.text.replace("#"+hashtag,"").strip()
         memo["title"] = memo["contents"]
         if len(memo["title"]) > 20:
-            memo["title"] = memo["title"][:17] + "..."
+            memo["title"] = memo["title"][:20]
         media_url = []
         if hasattr(status, "extended_entities"):
             if 'media' in status.extended_entities:
@@ -101,7 +107,7 @@ class StreamListener(tp.StreamListener):
             memo["contents"] = status["text"]
             memo["title"] = memo["contents"]
             if len(memo["title"]) > 20:
-                memo["title"] = memo["title"][:17] + "..."
+                memo["title"] = memo["title"][:20]
             media_url = []
             if "entities" in status and 'media' in status["entities"]:
                 status_media = status["entities"]["media"]

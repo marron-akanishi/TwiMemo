@@ -33,7 +33,7 @@ def del_memo(path, id):
         raise ValueError
     conn.row_factory = sql.Row
     cur = conn.cursor()
-    cur.execute("select * from list where id = {}".format(id))
+    cur.execute("select * from list where id = ?",(id,))
     row = cur.fetchone()
     media = row["media"].split(",")
     cur.close()
@@ -43,7 +43,7 @@ def del_memo(path, id):
                 os.remove(setting["UploadDir"] + "/" + url.split('/')[-1])
             except:
                 continue
-    conn.execute("delete from list where id = {}".format(id))
+    conn.execute("delete from list where id = ?",(id,))
     conn.commit()
     conn.close()
 
@@ -83,7 +83,7 @@ def get_detail(path, id):
         raise ValueError
     conn.row_factory = sql.Row
     cur = conn.cursor()
-    cur.execute("select * from list where id = {}".format(id))
+    cur.execute("select * from list where id = ?",(id,))
     row = cur.fetchone()
     detail = {
         "id":row["id"],
