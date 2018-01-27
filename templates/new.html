@@ -1,37 +1,42 @@
 {% extends "layout.html" %}
 {% block menu %}
-<script src="/static/js/jquery.autoexpand.js"></script>
 <div class="container">
   <input type="button" class="btn btn-default" onclick="location.href='/list'" value="リストに戻る">
 </div>
 {% endblock menu %}
 {% block contents %}
 <div class="container">
-  <form method="POST" action="/make/{{memo.id}}" class="form-horizontal" enctype="multipart/form-data">
-    <h5>タイトル</h5>
-    <input type="text" id="title" name="title" class="form-control margin">
+  <form method="POST" action="/make/{{memo.id}}" class="form-horizontal" id="new-form" enctype="multipart/form-data">
+    <h5>タイトル(20文字まで)</h5>
+    <input type="text" id="title" name="title" class="form-control margin" maxlength="20">
     <h5>内容(必須)</h5>
     <textarea id="contents" name="contents" class="form-control margin" required></textarea>
-    <div class="image-repeater">
-      <h5>画像</h5>
-      <div class="custom-file margin">
-        <input type="file" class="custom-file-input" id="media" name="media" onchange="">
-        <label class="custom-file-label" for="media">PNG,JPEGのみ可</label>
+    <div id="files">
+      <h5>画像(4枚まで)</h5>
+      <button type="button" class="btn btn-outline-primary margin" id="fileremove">－</button>
+      <button type="button" class="btn btn-outline-primary margin" id="fileadd">＋</button>
+      <div data-idx="0">
+        <div class="custom-file margin" id="file">
+          <input type="file" class="custom-file-input media-input" id="media_0">
+          <label class="custom-file-label" for="media_0">PNG,JPEGのみ可</label>
+        </div>
       </div>
-      <button class="btn btn-outline-primary margin">＋</button>
     </div>
-    <div>
-      <h5>リンク</h5>
-      <input type="text" id="url" name="url" class="form-control margin">
-      <button class="btn btn-outline-primary margin">＋</button>
+    <div id="urls">
+      <h5>リンク(URL)</h5>
+      <button type="button" class="btn btn-outline-primary margin" id="urlremove">－</button>
+      <button type="button" class="btn btn-outline-primary margin" id="urladd">＋</button>
+      <div data-idx="0">
+        <input type="url" id="url" class="form-control margin url-input">
+      </div>
     </div>
     <br>
-    <input type="submit" value="追加" class="btn btn-primary">
+    <input type="submit" class="btn btn-primary" id="submit" value="追加">
   </form>
 </div>
 <script>
-  $(function () {
-    $('textarea').autoExpand();
-  });
+  media_idx = 1;
+  url_idx = 1;
 </script>
+<script src="/static/js/form.js"></script>
 {% endblock contents %}

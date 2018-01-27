@@ -9,6 +9,8 @@
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Open Iconic -->
     <link href="/static/css/open-iconic-bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Markdown CSS -->
+    <link href="/static/css/github-markdown.css" rel="stylesheet" type="text/css" />
     <!-- Custom CSS -->
     <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
     <!-- jQuery -->
@@ -17,12 +19,18 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <!-- Utils -->
     <script src="/static/js/util.js"></script>
+    <script src="/static/js/jquery.autoexpand.js"></script>
+    <script src="/static/js/Nobeer.js"></script>
   </head>
   <body style="padding-top: 70px;">
     {%- block navbar -%}
     <header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        {% if session['userID'] %}
+        <a class="navbar-brand" href="/list">TwiMemo</a>
+        {% else %}
         <a class="navbar-brand" href="/">TwiMemo</a>
+        {% endif %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#link-list" aria-controls="link-list" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>

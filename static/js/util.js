@@ -8,7 +8,6 @@ function delmemo(id){
                 $(".btn").attr('disabled', true);
             },
             success:function(resultdata) {
-                alert('削除しました');
                 location.href = "/list";
             },
             error: function(error) {

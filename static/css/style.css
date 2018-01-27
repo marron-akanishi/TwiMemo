@@ -12,3 +12,7 @@
 .margin {
   margin-bottom: 5px;
 }
+
+.markdown-body img{
+  margin: 20px, 0px;
+}

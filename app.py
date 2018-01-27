@@ -157,8 +157,6 @@ def memo_editscreen(id):
     except:
         return flask.redirect(flask.url_for("error", code="101"))
     detail["contents"] = detail["contents"].replace("\n","\r\n")
-    detail["media"] = ','.join(detail["media"])
-    detail["url"] = '|'.join(detail["url"])
     return flask.render_template('edit.html', memo=detail)
 
 # 編集登録
@@ -200,7 +198,7 @@ def upload_file(file):
         filename = str(uuid.uuid4()) + "." + file.filename.split('.')[-1]
         file.save(setting['UploadDir'] + "/" + filename)
         url = setting['UploadServer'] + filename
-    return "," + url
+    return url
 
 # 追加登録
 @app.route('/make/<id>', methods=['POST'])
@@ -216,13 +214,14 @@ def memo_new(id):
         memo["title"] = memo["contents"][:20] + "..."
     else:
         memo["title"] = memo["contents"]
-    memo["media"] = ""
-    for i in range(1,5):
+    memo["media"] = []
+    count = int(flask.request.form["count"])
+    for i in range(count):
         try:
-            memo["media"] += upload_file(flask.request.files["media_"+str(i)])
+            memo["media"].append(upload_file(flask.request.files["media_"+str(i)]))
         except:
             continue
-    memo["media"] = memo["media"][1:]
+    memo["media"] = ",".join(memo["media"])
     memo["url"] = flask.request.form["url"]
     memo["source"] = "web"
     memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

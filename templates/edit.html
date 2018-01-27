@@ -1,34 +1,43 @@
 {% extends "layout.html" %}
 {% block menu %}
-<script src="/static/js/jquery.autoexpand.js"></script>
 <div class="container">
   <input type="button" class="btn btn-default" onclick="location.href='/detail/{{memo.id}}'" value="詳細に戻る">
 </div>
 {% endblock menu %}
 {% block contents %}
 <div class="container">
-  <form method="POST" action="/edited/{{memo.id}}" class="form-horizontal">
-    <h5>タイトル</h5>
-    <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control margin">
+  <form method="POST" action="/edited/{{memo.id}}" class="form-horizontal" id="edit-form">
+    <h5>タイトル(20文字まで)</h5>
+    <input type="text" id="title" name="title" value="{{memo.title}}" class="form-control margin" maxlength="20">
     <h5>内容(必須)</h5>
     <textarea id="contents" name="contents" class="form-control margin" required>{{memo.contents}}</textarea>
-    <div class="image-repeater">
-      <h5>画像</h5>
-      <input type="text" id="media" name="media" value="{{memo.media}}" class="form-control margin">
-      <button class="btn btn-outline-primary margin">＋</button>
+    <div id="images">
+      <h5>画像(URL)</h5>
+      <button type="button" class="btn btn-outline-primary margin" id="imageremove">－</button>
+      <button type="button" class="btn btn-outline-primary margin" id="imageadd">＋</button>
+      {% for image in memo.media %}
+      <div data-idx="{{loop.index0}}">
+        <input type="url" id="media" value="{{image}}" class="form-control margin media-input">
+      </div>
+      {% endfor %}
     </div>
-    <div>
-      <h5>リンク</h5>
-      <input type="text" id="url" name="url" value="{{memo.url}}" class="form-control margin">
-      <button class="btn btn-outline-primary margin">＋</button>
+    <div id="urls">
+      <h5>リンク(URL)</h5>
+      <button type="button" class="btn btn-outline-primary margin" id="urlremove">－</button>
+      <button type="button" class="btn btn-outline-primary margin" id="urladd">＋</button>
+      {% for url in memo.url %}
+      <div data-idx="{{loop.index0}}">
+        <input type="url" id="url" value="{{url}}" class="form-control margin url-input">
+      </div>
+      {% endfor %}
     </div>
     <br>
-    <input type="submit" value="更新" class="btn btn-primary">
+    <input type="submit" class="btn btn-primary" id="submit" value="更新">
   </form>
 </div>
 <script>
-  $(function () {
-    $('textarea').autoExpand();
-  });
+  media_idx = {{ memo.media|length }};
+  url_idx = {{ memo.url|length }};
 </script>
+<script src="/static/js/form.js"></script>
 {% endblock contents %}

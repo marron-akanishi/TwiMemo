@@ -94,6 +94,7 @@ class StreamListener(tp.StreamListener):
                 status = self.api.get_status(status_id)
                 content = self.make_memo(status)
                 memo.update(content)
+                memo["source"] = url
             else:
                 raise ValueError
         except:
@@ -114,7 +115,7 @@ class StreamListener(tp.StreamListener):
                     if not message_url_url.match(url):
                         urls.append(url['expanded_url'])
             memo["url"] = "|".join(urls)
-        memo["source"] = "DirectMessage"
+            memo["source"] = "DirectMessage"
         memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.write_memo(dbpath, memo)
         # リプを送信
