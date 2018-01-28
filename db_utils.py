@@ -114,7 +114,8 @@ def search_list(path, search):
             "title":row["title"],
             "media":row["media"],
             "url":row['url'],
-            "time":row["time"]
+            "time":row["time"],
+            "remind":row["remind"]
         })
     cur.close()
     conn.close()
