@@ -1,6 +1,5 @@
 import os
 import sqlite3 as sql
-import requests
 import json
 
 setting = json.load(open("setting.json"))

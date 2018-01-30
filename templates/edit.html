@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block menu %}
 <div class="container">
-  <input type="button" class="btn btn-default" onclick="location.href='/detail/{{memo.id}}'" value="詳細に戻る">
+  <input type="button" class="btn btn-secondary" onclick="location.href='/detail/{{memo.id}}'" value="詳細に戻る">
 </div>
 {% endblock menu %}
 {% block contents %}
@@ -13,7 +13,7 @@
     <textarea id="contents" name="contents" class="form-control margin" required>{{memo.contents}}</textarea>
     <div id="images">
       <h5>画像(URL)</h5>
-      <button type="button" class="btn btn-outline-primary margin" id="imageremove">－</button>
+      <button type="button" class="btn btn-outline-danger margin" id="imageremove">－</button>
       <button type="button" class="btn btn-outline-primary margin" id="imageadd">＋</button>
       {% for image in memo.media %}
       <div data-idx="{{loop.index0}}">
@@ -23,7 +23,7 @@
     </div>
     <div id="urls">
       <h5>リンク(URL)</h5>
-      <button type="button" class="btn btn-outline-primary margin" id="urlremove">－</button>
+      <button type="button" class="btn btn-outline-danger margin" id="urlremove">－</button>
       <button type="button" class="btn btn-outline-primary margin" id="urladd">＋</button>
       {% for url in memo.url %}
       <div data-idx="{{loop.index0}}">
@@ -32,7 +32,7 @@
       {% endfor %}
     </div>
     <br>
-    <input type="submit" class="btn btn-primary" id="submit" value="更新">
+    <input type="submit" class="btn btn-success" id="submit" value="更新">
   </form>
 </div>
 <script>

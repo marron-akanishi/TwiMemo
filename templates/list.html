@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block menu %}
+<script src="/static/js/bootstrap-datepicker.min.js"></script>
+<script src="/static/js/bootstrap-datepicker.ja.min.js"></script>
 <div class="container">
   <div class="alert alert-success" role="alert">@{{session['name']}}としてログインしました</div>
   <div class="row justify-content-between">
@@ -19,37 +21,62 @@
 {% block contents %}
 <div class="container">
   <div class="row">
-  {% for memo in list %}
-  <div class="col-md-6">
-    <div class="card margin">
-      <div class="card-body">
-        <h5 class="card-title text-short">{{memo.title}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{memo.time}}</h6>
-        <div class="row justify-content-between">
-          <div class="col-auto">
-            {% if memo.media != "" %}
-            <span class="oi oi-image"></span>
-            {% endif %}
-            {% if memo.url != "" %}
-            <span class="oi oi-bookmark"></span>
-            {% endif %}
-            {% if memo.remind != "" %}
-            <span class="oi oi-bell"></span>
-            {% endif %}
-          </div>
-          <div class="col-auto">
-            <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
-            <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>
+    {% for memo in list %}
+    <div class="col-md-6">
+      <div class="card margin">
+        <div class="card-body">
+          <h5 class="card-title text-short">{{memo.title}}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{memo.time}}</h6>
+          <div class="row justify-content-between">
+            <div class="col-auto">
+              {% if memo.media != "" %}
+              <span class="oi oi-image"></span>
+              {% endif %}
+              {% if memo.url != "" %}
+              <span class="oi oi-bookmark"></span>
+              {% endif %}
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-info" data-toggle="modal" data-target="#remind-setting" data-memoid="{{memo.id}}"><span class="oi oi-bell"></span></button>
+              <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
+              <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
+  <div class="modal fade" id="remind-setting" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">リマインド設定</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="hidden" id="date" name="date">
+            <div class="form-group" id="datepicker">
+              <label class="control-label">選択した日の午前8時にリプを送信します。</label>
+              <div class="in-line"></div>
+            </div>
+            <input type="hidden" id="memoid" name="memoid">
+            <div style="text-align: right">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+              <button type="button" class="btn btn-primary">登録</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
   <form action="/list" method="GET" class="d-sm-none">
     <input type="text" class="form-control margin" name="search">
     <div style="text-align: right"><input type="submit" class="btn btn-primary" value="検索"></div>
   </form>
 </div>
+<script src="/static/js/util.js"></script>
 {% endblock contents %}

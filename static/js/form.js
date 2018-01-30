@@ -91,7 +91,6 @@ $(() => {
         medias.each(function(){
             $(this).attr("name", $(this).attr('id')).appendTo(that);
         });
-
         var urls = $(".url-input").map(function () {
             return $(this).val();
         }).get().join('|');

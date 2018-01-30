@@ -15,7 +15,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 ErrorMessage = {
     "-1": "不明なエラーが発生しました。",
     "101": "メモの詳細取得に失敗しました。",
-    "102": "データベースの更新に失敗しました。"
+    "102": "データベースの更新に失敗しました。",
+    "103": "データベース名が不正です。ログインし直してください。",
+    "201": "Twitter認証に失敗しました。ログインし直してください。"
 }
 
 sql_escape = str.maketrans({
@@ -31,7 +33,7 @@ app.secret_key = setting['SecretKey']
 app.debug = setting['Debug'] # デバッグモード
 
 # TL監視
-if(setting['Debug'] == False):
+if setting['Debug'] == False:
     t1 = streaming.TLThread()
     t1.setDaemon(True)
     t1.start()
@@ -39,7 +41,9 @@ if(setting['Debug'] == False):
 # Twitter認証
 def tp_api():
     auth = tp.OAuthHandler(setting['twitter_API']['CK'], setting['twitter_API']['CS'], setting['twitter_API']['Callback_URL'])
-    auth.set_access_token(flask.session['key'],flask.session['secret'])
+    if flask.session.get('key') is None or flask.session.get('secret') is None:
+        return flask.redirect(flask.url_for("error", code="201"))
+    auth.set_access_token(flask.session.get('key'),flask.session.get('secret'))
     return tp.API(auth)
 
 # ログインチェック
@@ -47,14 +51,14 @@ def login_check(func):
     @wraps(func)
     def checker(*args, **kwargs):
         # きちんと認証していればセッション情報がある
-        if (not "userID" in flask.session) or flask.session['userID'] is None:
+        if flask.session.get('userID') is None:
             if "id" in kwargs:
                 flask.session['memo_id'] = kwargs['id']
             return flask.redirect(flask.url_for('twitter_oauth'))
         return func(*args, **kwargs)
     return checker
 
-# ここからウェブアプリケーション用のルーティングを記述
+# ここからルーティングを記述
 # トップページ
 @app.route('/')
 def index():
@@ -70,7 +74,7 @@ def index():
 # このページについて
 @app.route('/help')
 def help():
-    return flask.render_template('help.html',)
+    return flask.render_template('help.html')
 
 # エラー
 @app.errorhandler(404)
@@ -115,13 +119,13 @@ def twitter_authed():
     # 認証ユーザー取得
     flask.session['name'] = tp_api().me().screen_name
     flask.session['userID'] = tp_api().me().id_str
-    if 'memo_id' in flask.session:
-        response = flask.make_response(flask.redirect(flask.url_for('memo_detail', id=int(flask.session['memo_id']))))
+    if flask.session.get('memo_id') is not None:
+        response = flask.make_response(flask.redirect(flask.url_for('memo_detail', id=int(flask.session.get('memo_id')))))
         flask.session['memo_id'] = None
     else:
         response = flask.make_response(flask.redirect(flask.url_for('memo_list')))
-    response.set_cookie('key', flask.session['key'])
-    response.set_cookie('secret', flask.session['secret'])
+    response.set_cookie('key', flask.session.get('key'))
+    response.set_cookie('secret', flask.session.get('secret'))
     return response
 
 # ログアウトボタン
@@ -138,8 +142,10 @@ def logout():
 @app.route('/list', methods=['GET'])
 @login_check
 def memo_list():
-    dbname = flask.session['userID']
+    dbname = flask.session.get('userID')
     search = flask.request.args.get('search','')
+    if dbname is None:
+        return flask.redirect(flask.url_for("error", code="103"))
     try:
         if search:
             search = urllib.parse.unquote(search).translate(sql_escape)
@@ -154,7 +160,9 @@ def memo_list():
 @app.route('/detail/<id>')
 @login_check
 def memo_detail(id):
-    dbname = flask.session['userID']
+    dbname = flask.session.get('userID')
+    if dbname is None:
+        return flask.redirect(flask.url_for("error", code="103"))
     try:
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
@@ -162,11 +170,13 @@ def memo_detail(id):
     detail["contents"] = html.escape(detail["contents"]).replace("\n","<br>")
     return flask.render_template('detail.html', memo=detail)
 
-# メモ編集画面
+# メモ編集
 @app.route('/edit/<id>')
 @login_check
 def memo_edit(id):
-    dbname = flask.session['userID']
+    dbname = flask.session.get('userID')
+    if dbname is None:
+        return flask.redirect(flask.url_for("error", code="103"))
     try:
         detail = db.get_detail("DB/"+dbname+".db", int(id))
     except:
@@ -179,7 +189,9 @@ def memo_edit(id):
 @login_check
 def memo_update(id):
     memo = {}
-    dbname = flask.session['userID']
+    dbname = flask.session.get('userID')
+    if dbname is None:
+        return flask.redirect(flask.url_for("error", code="103"))
     memo["id"] = int(id)
     memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
     if flask.request.form["title"] != "":
@@ -207,6 +219,7 @@ def memo_new():
     memo["id"] = int(datetime.now().timestamp())
     return flask.render_template('new.html', memo=memo)
 
+# 画像アップロード
 def upload_file(file):
     url = ""
     if file.filename.split('.')[-1] in ['png', 'jpg']:
@@ -220,7 +233,9 @@ def upload_file(file):
 @login_check
 def memo_add(id):
     memo = {}
-    dbname = flask.session['userID']
+    dbname = flask.session.get('userID')
+    if dbname is None:
+        return flask.redirect(flask.url_for("error", code="103"))
     memo["id"] = int(id)
     memo["contents"] = flask.request.form["contents"].replace("\r\n","\n")
     if flask.request.form["title"] != "":
@@ -250,7 +265,9 @@ def memo_add(id):
 @app.route('/delete/<id>', methods=['DELETE'])
 @login_check
 def memo_delete(id):
-    dbname = flask.session['userID']
+    dbname = flask.session.get('userID')
+    if dbname is None:
+        return flask.redirect(flask.url_for("error", code="103"))
     db.del_memo("DB/"+dbname+".db", int(id))
     return "OK"
 

@@ -1,7 +1,7 @@
 import sqlite3 as sql
 import db_utils as db
 
-filelist = ["./DB/822323180.db.org", "./DB/1965603450.db.org"]
+filelist = ["./DB/0.db.org", "./DB/1.db.org"]
 
 for filename in filelist:
     memolist = []

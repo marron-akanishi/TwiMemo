@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block menu %}
 <div class="container">
-  <input type="button" class="btn btn-default" onclick="location.href='/list'" value="リストに戻る">
+  <input type="button" class="btn btn-secondary" onclick="location.href='/list'" value="リストに戻る">
 </div>
 {% endblock menu %}
 {% block contents %}
@@ -13,7 +13,7 @@
     <textarea id="contents" name="contents" class="form-control margin" required></textarea>
     <div id="files">
       <h5>画像(4枚まで)</h5>
-      <button type="button" class="btn btn-outline-primary margin" id="fileremove">－</button>
+      <button type="button" class="btn btn-outline-danger margin" id="fileremove">－</button>
       <button type="button" class="btn btn-outline-primary margin" id="fileadd">＋</button>
       <div data-idx="0">
         <div class="custom-file margin" id="file">
@@ -24,14 +24,14 @@
     </div>
     <div id="urls">
       <h5>リンク(URL)</h5>
-      <button type="button" class="btn btn-outline-primary margin" id="urlremove">－</button>
+      <button type="button" class="btn btn-outline-danger margin" id="urlremove">－</button>
       <button type="button" class="btn btn-outline-primary margin" id="urladd">＋</button>
       <div data-idx="0">
         <input type="url" id="url" class="form-control margin url-input">
       </div>
     </div>
     <br>
-    <input type="submit" class="btn btn-primary" id="submit" value="追加">
+    <input type="submit" class="btn btn-success" id="submit" value="追加">
   </form>
 </div>
 <script>
