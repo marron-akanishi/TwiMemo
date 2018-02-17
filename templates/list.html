@@ -35,9 +35,10 @@
               {% if memo.url != "" %}
               <span class="oi oi-bookmark"></span>
               {% endif %}
+              <!-- <span class="oi oi-bell"></span> -->
             </div>
             <div class="col-auto">
-              <button class="btn btn-info" data-toggle="modal" data-target="#remind-setting" data-memoid="{{memo.id}}"><span class="oi oi-bell"></span></button>
+              <!-- <button class="btn btn-info" data-toggle="modal" data-target="#remind-setting" data-memoid="{{memo.id}}"><span class="oi oi-bell"></span></button> -->
               <button class="btn btn-primary" onclick="location.href='/detail/{{memo.id}}'">詳細</button>
               <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">削除</button>
             </div>
@@ -51,7 +52,7 @@
     <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="ModalLabel">リマインド設定</h5>
+          <h5 class="modal-title" id="ModalLabel">リマインダー設定</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

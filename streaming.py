@@ -11,6 +11,8 @@ hashtag = "memo"
 # パターン
 status_url = re.compile(r"https://twitter.com/\w*/status/\d*")
 message_url = re.compile(r"https://twitter.com/messages/media/\d*")
+# ドメイン(localhostの場合リンクにならない)
+base_url = ""
 
 def get_oauth(setting):
     """設定ファイルから各種キーを取得し、OAUTH認証を行う"""
@@ -78,7 +80,7 @@ class StreamListener(tp.StreamListener):
             memo.update(content)
             db.write_memo(dbpath, memo)
             # リプを送信
-            self.api.update_status("@{} メモに登録しました[{}]".format(user,memo["time"]), memo["id"])
+            self.api.update_status("@{} メモに登録しました[{}] {}".format(user, memo["time"], base_url+str(memo["id"])), memo["id"])
 
     def on_direct_message(self, status):
         """DMの処理"""
@@ -124,7 +126,7 @@ class StreamListener(tp.StreamListener):
         memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.write_memo(dbpath, memo)
         # リプを送信
-        self.api.send_direct_message(sender, text="メモに登録しました[{}]".format(memo["time"]))
+        self.api.send_direct_message(sender, text="メモに登録しました[{}] {}".format(memo["time"], base_url+str(memo["id"])))
     
     def on_event(self, event):
         """フォロバ"""
@@ -135,6 +137,7 @@ class StreamListener(tp.StreamListener):
 if __name__ == '__main__':
     setting = json.load(open("setting.json"))
     hashtag = setting["HashTag"]
+    base_url = setting['twitter_API']['Callback_URL'].replace("authed","detail/")
     auth = get_oauth(setting)
     stream = tp.Stream(auth, StreamListener(tp.API(auth)), secure=True)
     print("start")
@@ -147,6 +150,7 @@ class TLThread(threading.Thread):
     def run(self):
         setting = json.load(open("setting.json"))
         hashtag = setting["HashTag"]
+        base_url = setting['twitter_API']['Callback_URL'].replace("authed","detail/")
         auth = get_oauth(setting)
         stream = tp.Stream(auth, StreamListener(tp.API(auth)), secure=True)
         if setting['Debug']:

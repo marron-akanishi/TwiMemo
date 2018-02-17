@@ -79,7 +79,7 @@ def help():
 # エラー
 @app.errorhandler(404)
 @app.route('/error', methods=['GET'])
-def error(code):
+def error(code = "-1"):
     code = flask.request.args.get('code')
     if not code:
         code = "-1"

@@ -4,7 +4,24 @@ var label_change = function(){
 };
 
 $(() => {
+    // フォームでのEnterキー送信無効
+    $("input").keydown(function (e) {
+        if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+            return false;
+        } else {
+            return true;
+        }
+    });
+    // 画面移動時の警告
+    $(window).on('beforeunload', function () {
+        return "変更が破棄されます。";
+    });
+    $("input[type=submit]").click(function () {
+        $(window).off('beforeunload');
+    });
+    // 内容入力用のテキストエリアの自動サイズ変更
     $('textarea').autoExpand();
+    // フォーム数動的変更
     var image_beer = $('#images').Nobeer({
         idx: media_idx,
         domList: [
@@ -59,7 +76,9 @@ $(() => {
     $('#urlremove').click(url_beer.remove);
     $('#fileadd').click(file_beer.add);
     $('#fileremove').click(file_beer.remove);
+    // ファイル名表示
     $('#media_0').on('change', label_change);
+    // 送信前の下準備
     $('#edit-form').submit(function () {
         var medias = $(".media-input").map(function () {
             return $(this).val();
