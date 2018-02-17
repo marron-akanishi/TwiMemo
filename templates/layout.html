@@ -13,12 +13,12 @@
     <link href="/static/css/open-iconic-bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="/static/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
     <link href="/static/css/github-markdown.css" rel="stylesheet" type="text/css" />
-    <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/style.css?ver={{session['version']}}" rel="stylesheet" type="text/css" />
     <!-- JS -->
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/jquery.autoexpand.js"></script>
-    <script src="/static/js/Nobeer.js"></script>
+    <script src="/static/js/Nobeer.js?ver={{session['version']}}"></script>
   </head>
   <body style="padding-top: 70px;">
     {%- block navbar -%}

@@ -1,5 +1,6 @@
 {
     "SecretKey": "qwertyuiopasdfghjkl",
+    "Version": "1.3",
     "UploadServer": "http://localhost:5000/uploads/",
     "UploadDir": "./uploads",
     "twitter_API": {

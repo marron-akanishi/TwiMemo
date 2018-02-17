@@ -119,6 +119,7 @@ def twitter_authed():
     # 認証ユーザー取得
     flask.session['name'] = tp_api().me().screen_name
     flask.session['userID'] = tp_api().me().id_str
+    flask.session['version'] = setting['Version']
     if flask.session.get('memo_id') is not None:
         response = flask.make_response(flask.redirect(flask.url_for('memo_detail', id=int(flask.session.get('memo_id')))))
         flask.session['memo_id'] = None
