@@ -155,7 +155,7 @@ def memo_list():
             memolist = db.get_list("DB/" + dbname + ".db")
     except:
         memolist = []
-    return flask.render_template('list.html',list=memolist)
+    return flask.render_template('list.html',list=memolist,count=len(memolist))
 
 # メモ詳細
 @app.route('/detail/<id>')
