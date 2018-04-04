@@ -26,7 +26,9 @@
     <div class="col-md-6">
       <div class="card margin">
         <div class="card-body">
-          <h5 class="card-title text-short"><a href="/detail/{{memo.id}}">{{memo.title}}</a></h5>
+          <h5 class="card-title text-short">
+            <a href="/detail/{{memo.id}}">{{memo.title}}</a>
+          </h5>
           <h6 class="card-subtitle mb-2 text-muted">{{memo.time}}</h6>
           <div class="row justify-content-between">
             <div class="col-auto">
@@ -36,9 +38,17 @@
               {% if memo.url != "" %}
               <span class="oi oi-bookmark"></span>
               {% endif %}
+              {% if memo.remind != "" %}
+              <span class="oi oi-bell"></span>
+              {% endif %}
             </div>
             <div class="col-auto">
-              <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')"><span class="oi oi-trash"> 削除</span></button>
+              <button class="btn btn-info" data-toggle="modal" data-target="#remind-setting" data-memoid="{{memo.id}}">
+                <span class="oi oi-bell"></span>
+              </button>
+              <button class="btn btn-danger" onclick="delmemo('{{memo.id}}')">
+                <span class="oi oi-trash"> 削除</span>
+              </button>
             </div>
           </div>
         </div>
@@ -46,9 +56,41 @@
     </div>
     {% endfor %}
   </div>
+  <div class="modal fade" id="remind-setting" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">リマインダー設定</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="hidden" id="date" name="date">
+            <div class="form-group" id="datepicker">
+              <label class="control-label">指定された日時にリプを送信します。</label>
+              <div class="in-line"></div>
+            </div>
+            <div>
+              時刻(0～23時)
+              <input class="form-control" type="number" min="0" max="23" id="time" name="time" style="width: 30%;">
+            </div>
+            <input type="hidden" id="memoid" name="memoid">
+            <div style="text-align: right">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+              <button type="button" class="btn btn-primary">登録</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   <form action="/list" method="GET" class="d-sm-none">
     <input type="text" class="form-control margin" name="search" id="sm_search">
-    <div style="text-align: right"><input type="submit" class="btn btn-primary" value="検索"></div>
+    <div style="text-align: right">
+      <input type="submit" class="btn btn-primary" value="検索">
+    </div>
   </form>
 </div>
 <script src="/static/js/util.js?ver={{session['version']}}"></script>
