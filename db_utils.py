@@ -106,7 +106,8 @@ def search_list(path, search):
         raise ValueError
     conn.row_factory = sql.Row
     cur = conn.cursor()
-    cur.execute("select * from list where contents like ? escape '$' order by time desc",("%"+search+"%",))
+    cur.execute("""select * from list where title like :text or contents like :text 
+                escape '$' order by time desc""",{"text":"%"+search+"%"})
     for row in cur:
         memolist.append({
             "id":row["id"],
