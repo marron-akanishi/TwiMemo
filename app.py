@@ -17,6 +17,7 @@ ErrorMessage = {
     "101": "メモの詳細取得に失敗しました。",
     "102": "データベースの更新に失敗しました。",
     "103": "データベース名が不正です。ログインし直してください。",
+    "104": "リマインドの追加に失敗しました。",
     "201": "Twitter認証に失敗しました。ログインし直してください。"
 }
 
@@ -25,6 +26,8 @@ sql_escape = str.maketrans({
     '_': '$_',
     '$': '$$',
 })
+
+db_path = "DB/{}.db"
 
 # 自身の名称を app という名前でインスタンス化する
 app = flask.Flask(__name__)
@@ -150,12 +153,32 @@ def memo_list():
     try:
         if search:
             search = urllib.parse.unquote(search).translate(sql_escape)
-            memolist = db.search_list("DB/" + dbname + ".db", search)
+            memolist = db.search_list(db_path.format(dbname), search)
         else:
-            memolist = db.get_list("DB/" + dbname + ".db")
+            memolist = db.get_list(db_path.format(dbname))
     except:
         memolist = []
     return flask.render_template('list.html',list=memolist,count=len(memolist))
+
+# リマインド登録
+@app.route('/remind', methods=['POST'])
+@login_check
+def memo_remind():
+    remind = {}
+    remind["id"] = int(flask.request.form["memoid"])
+    remind["userid"] = int(flask.session.get('userID'))
+    try:
+        remind["title"] = db.get_detail(db_path.format(remind["userid"]), remind["id"])["title"]
+    except:
+        return flask.redirect(flask.url_for("error", code="101"))
+    remind["username"] = flask.session.get('name')
+    remind["date"] = flask.request.form["date"]
+    remind["time"] = int(flask.request.form["time"])
+    try:
+        db.add_remind(remind)
+    except:
+        return flask.redirect(flask.url_for("error", code="104"))
+    return flask.redirect(flask.url_for("memo_list"))
 
 # メモ詳細
 @app.route('/detail/<id>')
@@ -165,7 +188,7 @@ def memo_detail(id):
     if dbname is None:
         return flask.redirect(flask.url_for("error", code="103"))
     try:
-        detail = db.get_detail("DB/"+dbname+".db", int(id))
+        detail = db.get_detail(db_path.format(dbname), int(id))
     except:
         return flask.redirect(flask.url_for("error", code="101"))
     detail["contents"] = html.escape(detail["contents"]).replace("\n","<br>")
@@ -179,7 +202,7 @@ def memo_edit(id):
     if dbname is None:
         return flask.redirect(flask.url_for("error", code="103"))
     try:
-        detail = db.get_detail("DB/"+dbname+".db", int(id))
+        detail = db.get_detail(db_path.format(dbname), int(id))
     except:
         return flask.redirect(flask.url_for("error", code="101"))
     detail["contents"] = detail["contents"].replace("\n","\r\n")
@@ -206,8 +229,8 @@ def memo_update(id):
     memo["source"] = "edited"
     memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
-        db.update_memo("DB/"+dbname+".db", int(id), memo)
-        detail = db.get_detail("DB/"+dbname+".db", int(id))
+        db.update_memo(db_path.format(dbname), int(id), memo)
+        detail = db.get_detail(db_path.format(dbname), int(id))
     except:
         return flask.redirect(flask.url_for("error", code="102"))
     return flask.redirect("/detail/"+id)
@@ -257,7 +280,7 @@ def memo_add(id):
     memo["source"] = "web"
     memo["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
-        db.write_memo("DB/"+dbname+".db", memo)
+        db.write_memo(db_path.format(dbname), memo)
     except:
         return flask.redirect(flask.url_for("error", code="102"))
     return flask.redirect("/list")
@@ -269,7 +292,7 @@ def memo_delete(id):
     dbname = flask.session.get('userID')
     if dbname is None:
         return flask.redirect(flask.url_for("error", code="103"))
-    db.del_memo("DB/"+dbname+".db", int(id))
+    db.del_memo(db_path.format(dbname), int(id))
     return "OK"
 
 # 画像サーバー

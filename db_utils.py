@@ -120,3 +120,33 @@ def search_list(path, search):
     cur.close()
     conn.close()
     return memolist
+
+# リマインド追加
+def add_remind(remind):
+    # リマインド用DB
+    if os.path.exists("DB/remind.db"):
+        conn = sql.connect("DB/remind.db")
+    else:
+        conn = sql.connect("DB/remind.db")
+        conn.execute("""create table list (id integer, title text, userid integer, username text,
+                        date text, time integer)""")
+        conn.commit()
+    try:
+        SQL = "insert into list values(?,?,?,?,?,?)"
+        value = (remind["id"], remind["title"], remind["userid"], remind["username"], remind["date"], remind["time"])
+        conn.execute(SQL, value)
+        conn.commit()
+    except:
+        raise ValueError
+    conn.close()
+    # メモDB
+    db_path = "DB/{}.db".format(remind["userid"])
+    if os.path.exists(db_path):
+        conn = sql.connect(db_path)
+    else:
+        raise ValueError
+    SQL = "update list set remind=? where id=?"
+    value = (remind["date"], remind["id"])
+    conn.execute(SQL, value)
+    conn.commit()
+    conn.close()

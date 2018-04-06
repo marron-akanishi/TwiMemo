@@ -62,7 +62,9 @@
     <p class="footer">
       <div class="text-center">
         Copyright &copy; 2017-2018 Marron Akanishi All Rights Reserved.<br>
+        {% if session['version'] %}
         Script Version: {{session['version']}}
+        {% endif %}
       </div>
     </p>
     {%- endblock -%}
